@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Top bun dome -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4.5,10.2 C4.5,5.8 19.5,5.8 19.5,10.2 H4.5 Z" />
+
+    <!-- Middle layer / wavy patty -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3.5,12.2 C3.5,11.5 4.2,11.3 5.2,11.6 C7.2,12.3 9.2,11.3 12,11.6 C14.8,11.9 16.8,11.3 18.8,11.6 C19.8,11.8 20.5,12.1 20.5,12.8 C20.5,13.5 19.8,13.8 18.8,13.8 H5.2 C4.2,13.8 3.5,13.2 3.5,12.2 Z" />
+
+    <!-- Bottom bun -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4.5,15.5 H19.5 C19.5,18.8 16.5,19.5 12,19.5 C7.5,19.5 4.5,18.8 4.5,15.5 Z" />
+</vector>

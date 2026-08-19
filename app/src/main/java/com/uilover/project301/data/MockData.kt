@@ -1,0 +1,101 @@
+package com.uilover.project301.data
+
+import com.uilover.project301.R
+
+// ── Categories ───────────────────────────────────────────────────────────────
+
+val MockCategories = listOf(
+    Category(id = 1, name = "Pizza",    iconRes = R.drawable.ic_category_pizza),
+    Category(id = 2, name = "Sushi",    iconRes = R.drawable.ic_category_sushi),
+    Category(id = 3, name = "Burgers",  iconRes = R.drawable.ic_category_burger),
+    Category(id = 4, name = "Desserts", iconRes = R.drawable.ic_category_dessert),
+)
+
+// ── Food Items – using LOCAL drawable resources ───────────────────────────────
+
+val MockFoodItems = listOf(
+    FoodItem(
+        id           = 1,
+        name         = "Luigi's Woodfired Pizza",
+        description  = "Authentic Neapolitan style pizza with fresh mozzarella, San Marzano tomatoes, and basil.",
+        price        = 18.50,
+        rating       = 4.8,
+        image        = ImageSource.Local(R.drawable.luigis_woodfired_pizza),
+        categoryId   = 1,
+        badge        = null,
+        isPopular    = true,
+        ingredients  = listOf("San Marzano Tomatoes", "Mozzarella", "Fresh Basil", "Olive Oil"),
+        distanceKm   = "0.8 km",
+        deliveryTime = "10-15 min",
+    ),
+    FoodItem(
+        id           = 2,
+        name         = "The Smash Grill",
+        description  = "Double wagyu beef patties, house-made pickles, caramelized onions, and secret sauce.",
+        price        = 14.00,
+        rating       = 4.9,
+        image        = ImageSource.Local(R.drawable.the_smash_grill),
+        categoryId   = 3,
+        badge        = "BEST SELLER",
+        isPopular    = true,
+        ingredients  = listOf("Wagyu Beef", "House Pickles", "Secret Sauce", "Brioche Bun"),
+        distanceKm   = "1.5 km",
+        deliveryTime = "15-25 min",
+    ),
+    FoodItem(
+        id           = 3,
+        name         = "Sakura Sushi",
+        description  = "Premium 12-piece chef's selection featuring fresh salmon, tuna, and yellowtail nigiri.",
+        price        = 24.00,
+        rating       = 4.6,
+        image        = ImageSource.Local(R.drawable.sakura_sushi),
+        categoryId   = 2,
+        badge        = null,
+        isPopular    = true,
+        ingredients  = listOf("Fresh Salmon", "Yellowtail", "Tuna", "Sushi Rice"),
+        distanceKm   = "2.1 km",
+        deliveryTime = "20-30 min",
+    ),
+    FoodItem(
+        id           = 4,
+        name         = "The Gourmet Royale",
+        description  = "Our signature double-patty smash burger featuring 100% Angus beef, melty American cheese, crisp iceberg lettuce, thick-cut heritage tomatoes, and our secret house sauce, all served on a perfectly toasted brioche bun.",
+        price        = 14.99,
+        rating       = 4.8,
+        image        = ImageSource.Local(R.drawable.the_gourmet_royale),
+        categoryId   = 3,
+        badge        = "NEW",
+        isPopular    = true,
+        ingredients  = listOf("Angus Beef", "Brioche Bun", "Lettuce", "House Sauce"),
+        distanceKm   = "1.2 km",
+        deliveryTime = "15-20 min",
+    ),
+    FoodItem(
+        id           = 5,
+        name         = "Classic Artisan Burger",
+        description  = "House-ground beef blend with crisp iceberg lettuce, tomato, and our signature burger sauce.",
+        price        = 13.00,
+        rating       = 4.5,
+        image        = ImageSource.Local(R.drawable.classic_artisan_burger),
+        categoryId   = 3,
+        badge        = null,
+        isPopular    = false,
+        ingredients  = listOf("Beef Blend", "Iceberg Lettuce", "Tomato", "Burger Sauce"),
+        distanceKm   = "0.9 km",
+        deliveryTime = "12-18 min",
+    ),
+    FoodItem(
+        id           = 6,
+        name         = "Crispy French Fries",
+        description  = "Golden double-fried fries seasoned with sea salt and rosemary, served with aioli dip.",
+        price        = 6.50,
+        rating       = 4.4,
+        image        = ImageSource.Local(R.drawable.crispy_french_fries),
+        categoryId   = 4,
+        badge        = null,
+        isPopular    = false,
+        ingredients  = listOf("Russet Potato", "Sea Salt", "Rosemary", "Aioli"),
+        distanceKm   = "1.0 km",
+        deliveryTime = "10-15 min",
+    ),
+)

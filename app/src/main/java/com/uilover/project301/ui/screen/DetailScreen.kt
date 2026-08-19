@@ -1,0 +1,533 @@
+package com.uilover.project301.ui.screen
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import com.uilover.project301.data.FoodItem
+import com.uilover.project301.data.ImageSource
+import com.uilover.project301.ui.theme.OnSurface
+import com.uilover.project301.ui.theme.OnSurfaceVariant
+import com.uilover.project301.ui.theme.Outline
+import com.uilover.project301.ui.theme.Primary
+import com.uilover.project301.ui.theme.Secondary
+import com.uilover.project301.ui.theme.Surface
+import com.uilover.project301.ui.theme.SurfaceVariant
+import com.uilover.project301.viewmodel.HomeViewModel
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Detail Screen Entry Point
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+fun DetailScreen(
+    foodId: Int,
+    viewModel: HomeViewModel,
+    onBack: () -> Unit,
+) {
+    val food = viewModel.getItemById(foodId)
+
+    if (food == null) {
+        Box(
+            modifier         = Modifier.fillMaxSize().background(Surface),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("Item not found", color = OnSurfaceVariant)
+        }
+        return
+    }
+
+    DetailContent(
+        food        = food,
+        onBack      = onBack,
+        onAddToCart = { qty -> repeat(qty) { viewModel.addToCart(food) } },
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Content
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun DetailContent(
+    food: FoodItem,
+    onBack: () -> Unit,
+    onAddToCart: (Int) -> Unit,
+) {
+    var quantity   by rememberSaveable { mutableIntStateOf(1) }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize().background(Surface)) {
+
+        // ── Scrollable body ────────────────────────────────────────────────
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            // Hero image
+            HeroImageSection(
+                food       = food,
+                isFavorite = isFavorite,
+                onFavClick = { isFavorite = !isFavorite },
+                onBack     = onBack,
+            )
+
+            // White content sheet that overlaps the bottom of the hero
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                    )
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
+            ) {
+                // Name + Price
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment     = Alignment.Top,
+                ) {
+                    Text(
+                        text     = food.name,
+                        style    = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize   = 26.sp,
+                            lineHeight = 32.sp,
+                        ),
+                        color    = OnSurface,
+                        modifier = Modifier.weight(1f).padding(end = 12.dp),
+                    )
+                    Text(
+                        text  = "$${String.format("%.2f", food.price)}",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize   = 22.sp,
+                        ),
+                        color = Primary,
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                // ★ 4.8  •  1.2 km  •  15-20 min
+                MetaRow(food)
+
+                Spacer(Modifier.height(20.dp))
+
+                // Description
+                SectionTitle("Description")
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text  = food.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = OnSurfaceVariant,
+                )
+
+                // Key Ingredients
+                if (food.ingredients.isNotEmpty()) {
+                    Spacer(Modifier.height(20.dp))
+                    SectionTitle("Key Ingredients")
+                    Spacer(Modifier.height(10.dp))
+                    IngredientChips(ingredients = food.ingredients)
+                }
+
+                // Bottom padding so content isn't hidden behind the docked bar
+                Spacer(Modifier.height(100.dp))
+            }
+        }
+
+        // ── Bottom docked bar ─────────────────────────────────────────────
+        BottomBar(
+            price    = food.price,
+            quantity = quantity,
+            onMinus  = { if (quantity > 1) quantity-- },
+            onPlus   = { quantity++ },
+            onAdd    = { onAddToCart(quantity) },
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Hero Image + Floating Buttons
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun HeroImageSection(
+    food: FoodItem,
+    isFavorite: Boolean,
+    onFavClick: () -> Unit,
+    onBack: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+    ) {
+        when (food.image) {
+            is ImageSource.Local -> Image(
+                painter            = painterResource(food.image.resId),
+                contentDescription = food.name,
+                contentScale       = ContentScale.Crop,
+                modifier           = Modifier.fillMaxSize(),
+            )
+            is ImageSource.Remote -> AsyncImage(
+                model              = food.image.url,
+                contentDescription = food.name,
+                contentScale       = ContentScale.Crop,
+                modifier           = Modifier.fillMaxSize(),
+            )
+        }
+
+        // Top scrim gradient for button readability
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f   to Color.Black.copy(alpha = 0.28f),
+                        0.5f to Color.Transparent,
+                    )
+                )
+        )
+
+        // Back button
+        FloatingIconButton(
+            onClick  = onBack,
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(start = 16.dp, top = 8.dp)
+                .align(Alignment.TopStart),
+        ) {
+            Icon(
+                imageVector        = Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = "Back",
+                tint               = OnSurface,
+                modifier           = Modifier.size(20.dp),
+            )
+        }
+
+        // Favourite button with scale + tint animation
+        val favScale by animateFloatAsState(
+            targetValue   = if (isFavorite) 1.18f else 1f,
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            label         = "fav_scale",
+        )
+        val favTint by animateColorAsState(
+            targetValue   = if (isFavorite) Primary else OnSurface,
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            label         = "fav_tint",
+        )
+        FloatingIconButton(
+            onClick  = onFavClick,
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(end = 16.dp, top = 8.dp)
+                .align(Alignment.TopEnd),
+        ) {
+            Icon(
+                imageVector        = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = "Favourite",
+                tint               = favTint,
+                modifier           = Modifier
+                    .size(20.dp)
+                    .scale(favScale),
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Floating circle icon button  (back / favourite)
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun FloatingIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier         = modifier
+            .size(40.dp)
+            .shadow(elevation = 4.dp, shape = CircleShape)
+            .background(Color.White, CircleShape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication        = null,
+                onClick           = onClick,
+            ),
+    ) {
+        content()
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Meta row   ★ 4.8  •  1.2 km  •  15-20 min
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun MetaRow(food: FoodItem) {
+    Row(
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text  = "★",
+            color = Secondary,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+        )
+        Text(
+            text  = food.rating.toString(),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = OnSurface,
+        )
+        MetaDot()
+        Text(
+            text  = food.distanceKm,
+            style = MaterialTheme.typography.bodyMedium,
+            color = OnSurfaceVariant,
+        )
+        MetaDot()
+        Text(
+            text  = food.deliveryTime,
+            style = MaterialTheme.typography.bodyMedium,
+            color = OnSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun MetaDot() {
+    Box(
+        modifier = Modifier
+            .size(4.dp)
+            .background(OnSurfaceVariant.copy(alpha = 0.5f), CircleShape)
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section title
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text  = text,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        color = OnSurface,
+    )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ingredient chips  (FlowRow so they wrap naturally)
+// ─────────────────────────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun IngredientChips(ingredients: List<String>) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement   = Arrangement.spacedBy(8.dp),
+    ) {
+        ingredients.forEach { ingredient ->
+            IngredientChip(label = ingredient)
+        }
+    }
+}
+
+@Composable
+private fun IngredientChip(label: String) {
+    Row(
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier              = Modifier
+            .border(
+                width = 1.dp,
+                color = Outline,
+                shape = RoundedCornerShape(100.dp),
+            )
+            .background(SurfaceVariant, RoundedCornerShape(100.dp))
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(OnSurfaceVariant.copy(alpha = 0.4f), CircleShape)
+        )
+        Text(
+            text  = label,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            color = OnSurface,
+        )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bottom docked bar   [ − 1 + ]   [ 🛒 Add to Cart – $14.99 ]
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun BottomBar(
+    price: Double,
+    quantity: Int,
+    onMinus: () -> Unit,
+    onPlus: () -> Unit,
+    onAdd: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier              = modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation    = 12.dp,
+                shape        = RoundedCornerShape(0.dp),
+                ambientColor = Color.Black.copy(alpha = 0.08f),
+            )
+            .background(Color.White)
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        // ── Quantity selector  [ − 1 + ] ──────────────────────────────────
+        Row(
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            modifier              = Modifier
+                .border(1.5.dp, Outline, RoundedCornerShape(100.dp))
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+        ) {
+            QuantityButton(label = "−", onClick = onMinus, enabled = quantity > 1)
+            Text(
+                text     = quantity.toString(),
+                style    = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color    = OnSurface,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            QuantityButton(label = "+", onClick = onPlus, enabled = true)
+        }
+
+        Spacer(Modifier.width(16.dp))
+
+        // ── Add to Cart pill button ────────────────────────────────────────
+        Row(
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier              = Modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(100.dp))
+                .background(Primary)
+                .clickable(onClick = onAdd)
+                .padding(vertical = 14.dp),
+        ) {
+            Icon(
+                imageVector        = Icons.Filled.ShoppingCart,
+                contentDescription = null,
+                tint               = Color.White,
+                modifier           = Modifier.size(18.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text  = "Add to Cart – \$${String.format("%.2f", price * quantity)}",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize   = 14.sp,
+                ),
+                color = Color.White,
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Quantity +/− button
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun QuantityButton(
+    label: String,
+    onClick: () -> Unit,
+    enabled: Boolean,
+) {
+    val tint = if (enabled) OnSurface else OnSurfaceVariant.copy(alpha = 0.4f)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier         = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(SurfaceVariant)
+            .clickable(
+                enabled           = enabled,
+                interactionSource = remember { MutableInteractionSource() },
+                indication        = null,
+                onClick           = onClick,
+            ),
+    ) {
+        Text(
+            text  = label,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize   = 18.sp,
+            ),
+            color = tint,
+        )
+    }
+}

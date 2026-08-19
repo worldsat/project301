@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Sushi roll outline, inner ring, and center details -->
+    <path
+        android:fillColor="#000000"
+        android:fillType="evenOdd"
+        android:pathData="M3.5,12 a8.5,8.5 0 1,0 17,0 a8.5,8.5 0 1,0 -17,0
+                         M5.5,12 a6.5,6.5 0 1,0 13,0 a6.5,6.5 0 1,0 -13,0
+                         M8.5,12 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
+
+    <!-- Center garnish / arrow -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M11,10.5 L12,13.5 L13,10.5 Z" />
+
+    <!-- Dots around the outer circle -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M11.3,4.2 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0
+                         M11.3,19.8 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0
+                         M4.2,12 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0
+                         M18.4,12 a0.7,0.7 0 1,0 1.4,0 a0.7,0.7 0 1,0 -1.4,0
+                         M6.3,6.3 a0.6,0.6 0 1,0 1.2,0 a0.6,0.6 0 1,0 -1.2,0
+                         M16.5,6.3 a0.6,0.6 0 1,0 1.2,0 a0.6,0.6 0 1,0 -1.2,0
+                         M6.3,17.7 a0.6,0.6 0 1,0 1.2,0 a0.6,0.6 0 1,0 -1.2,0
+                         M16.5,17.7 a0.6,0.6 0 1,0 1.2,0 a0.6,0.6 0 1,0 -1.2,0" />
+</vector>
