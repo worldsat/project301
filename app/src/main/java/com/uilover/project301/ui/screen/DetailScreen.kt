@@ -195,18 +195,21 @@ private fun DetailContent(
 
                 // Description
                 SectionTitle("Description")
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 Text(
                     text  = food.description,
-                    style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        lineHeight = 22.sp,
+                        fontSize   = 14.5.sp,
+                    ),
                     color = OnSurfaceVariant,
                 )
 
                 // Key Ingredients
                 if (food.ingredients.isNotEmpty()) {
-                    Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(24.dp))
                     SectionTitle("Key Ingredients")
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(14.dp))
                     IngredientChips(ingredients = food.ingredients)
                 }
 
@@ -390,59 +393,114 @@ private fun MetaDot() {
 // Section title
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Section title
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
 private fun SectionTitle(text: String) {
     Text(
         text  = text,
-        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.Bold,
+            fontSize   = 20.sp,
+        ),
         color = OnSurface,
     )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ingredient chips  (FlowRow so they wrap naturally)
+// Ingredient chips  (FlowRow with emoji + pill chip styling)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun IngredientChips(ingredients: List<String>) {
     FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement   = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement   = Arrangement.spacedBy(10.dp),
     ) {
         ingredients.forEach { ingredient ->
-            IngredientChip(label = ingredient)
+            IngredientChip(rawIngredient = ingredient)
         }
     }
 }
 
+private fun getIngredientEmoji(name: String): String {
+    val clean = name.lowercase().trim()
+    return when {
+        clean.contains("wagyu") || clean.contains("angus") || clean.contains("beef") || clean.contains("patty") || clean.contains("meat") -> "🥩"
+        clean.contains("pickle") || clean.contains("cucumber") -> "🥒"
+        clean.contains("secret sauce") || clean.contains("honey") -> "🍯"
+        clean.contains("burger sauce") || clean.contains("ketchup") || clean.contains("sauce") || clean.contains("relish") -> "🥫"
+        clean.contains("bun") || clean.contains("bread") || clean.contains("brioche") -> "🍞"
+        clean.contains("cheddar") || clean.contains("cheese") || clean.contains("mozzarella") -> "🧀"
+        clean.contains("tomato") -> "🍅"
+        clean.contains("basil") || clean.contains("rosemary") || clean.contains("herb") -> "🌿"
+        clean.contains("olive") -> "🫒"
+        clean.contains("salmon") || clean.contains("fish") -> "🐟"
+        clean.contains("yellowtail") -> "🐠"
+        clean.contains("tuna") || clean.contains("sushi") -> "🍣"
+        clean.contains("rice") -> "🍚"
+        clean.contains("lettuce") || clean.contains("onion") -> "🥬"
+        clean.contains("potato") || clean.contains("fries") -> "🥔"
+        clean.contains("salt") || clean.contains("pepper") -> "🧂"
+        clean.contains("aioli") || clean.contains("garlic") -> "🧄"
+        clean.contains("bacon") -> "🥓"
+        clean.contains("chicken") -> "🍗"
+        clean.contains("egg") -> "🍳"
+        clean.contains("avocado") -> "🥑"
+        clean.contains("mushroom") -> "🍄"
+        else -> "🍽️"
+    }
+}
+
+private fun parseIngredient(raw: String): Pair<String, String> {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) return Pair("🍽️", "")
+
+    val firstCodePoint = trimmed.codePointAt(0)
+    val charCount = Character.charCount(firstCodePoint)
+    val firstCharString = trimmed.substring(0, charCount)
+
+    // Check if the string already starts with an emoji or special symbol
+    if (trimmed.length > charCount && !firstCharString[0].isLetterOrDigit() && !firstCharString[0].isWhitespace()) {
+        val rest = trimmed.substring(charCount).trim()
+        return Pair(firstCharString, rest)
+    }
+
+    val emoji = getIngredientEmoji(trimmed)
+    return Pair(emoji, trimmed)
+}
+
 @Composable
-private fun IngredientChip(label: String) {
+private fun IngredientChip(rawIngredient: String) {
+    val (emoji, label) = parseIngredient(rawIngredient)
     Row(
         verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier              = Modifier
-            .shadow(
-                elevation    = 1.5.dp,
-                shape        = RoundedCornerShape(100.dp),
-                ambientColor = Color.Black.copy(alpha = 0.04f),
-            )
-            .background(Color.White, RoundedCornerShape(100.dp))
-            .border(
-                width = 1.dp,
-                color = Outline.copy(alpha = 0.6f),
+            .background(
+                color = Color(0xFFF3F4F6),
                 shape = RoundedCornerShape(100.dp),
             )
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE5E7EB),
+                shape = RoundedCornerShape(100.dp),
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .background(OnSurfaceVariant.copy(alpha = 0.4f), CircleShape)
+        Text(
+            text     = emoji,
+            fontSize = 16.sp,
         )
         Text(
             text  = label,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.SemiBold,
+                fontSize   = 15.sp,
+            ),
             color = OnSurface,
         )
     }

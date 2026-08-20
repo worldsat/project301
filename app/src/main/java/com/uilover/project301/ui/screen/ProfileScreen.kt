@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
@@ -112,6 +113,7 @@ fun ProfileScreen(
     onHomeClick: () -> Unit = {},
     onSearchClick: () -> Unit = onHomeClick,
     onOrdersClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -146,7 +148,10 @@ fun ProfileScreen(
         containerColor = Surface,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            ProfileTopBar(onEditClick = { showEditProfileDialog = true })
+            ProfileTopBar(
+                onEditClick = { showEditProfileDialog = true },
+                onMenuClick = onMenuClick,
+            )
         },
         bottomBar = {
             AppBottomNav(
@@ -645,7 +650,10 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileTopBar(onEditClick: () -> Unit) {
+private fun ProfileTopBar(
+    onEditClick: () -> Unit,
+    onMenuClick: () -> Unit = {},
+) {
     TopAppBar(
         title = {
             Text(
@@ -656,6 +664,15 @@ private fun ProfileTopBar(onEditClick: () -> Unit) {
                 ),
                 color = OnSurface,
             )
+        },
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = "Menu",
+                    tint = OnSurface,
+                )
+            }
         },
         actions = {
             IconButton(

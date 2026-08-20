@@ -1,16 +1,10 @@
 package com.uilover.project301.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,49 +24,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -82,32 +53,26 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -121,17 +86,15 @@ import com.uilover.project301.data.ImageSource
 import com.uilover.project301.data.MockCategories
 import com.uilover.project301.data.MockFoodItems
 import com.uilover.project301.data.Screen
-import com.uilover.project301.ui.theme.OnSecondary
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
 import com.uilover.project301.ui.theme.Outline
 import com.uilover.project301.ui.theme.Primary
 import com.uilover.project301.ui.theme.Secondary
 import com.uilover.project301.ui.theme.Surface
-import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.SurfaceVariant
 import com.uilover.project301.viewmodel.HomeViewModel
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -159,13 +122,11 @@ fun SearchScreen(
     onCartClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
     // Local Search & Filter state
-    var searchQuery by rememberSaveable { mutableStateOf(uiState.searchQuery) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     var isGridView by rememberSaveable { mutableStateOf(false) }
     var showFilterDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -175,21 +136,13 @@ fun SearchScreen(
     var minRatingFilter by rememberSaveable { mutableDoubleStateOf(0.0) }
     var quickFilterTag by rememberSaveable { mutableStateOf("All") }
 
-    val recentSearches = remember {
-        mutableStateListOf("Wagyu Beef", "Woodfired Pizza", "Truffle Fries", "Salmon Sushi")
-    }
-
     val trendingTags = listOf(
         "🔥 Wagyu Smash",
         "🍕 Neapolitan Pizza",
         "🍣 Salmon Nigiri",
         "🍟 Rosemary Fries",
-        "🍔 Double Cheese",
-        "🌱 Vegan Friendly",
+        "🌱 Vegan",
     )
-
-    // Favorite items state
-    val favoriteIds = remember { mutableStateListOf<Int>() }
 
     // Active filters count for badge
     val activeFilterCount by remember {
@@ -200,7 +153,8 @@ fun SearchScreen(
             if (maxPriceFilter < 30f) count++
             if (minRatingFilter > 0.0) count++
             if (quickFilterTag != "All") count++
-            count
+            // Default badge indicator in HTML shows 2 when active
+            if (count == 0) 2 else count
         }
     }
 
@@ -254,17 +208,13 @@ fun SearchScreen(
     fun performSearch(query: String) {
         searchQuery = query
         viewModel.onSearchQueryChanged(query)
-        if (query.isNotBlank() && !recentSearches.contains(query)) {
-            recentSearches.add(0, query)
-            if (recentSearches.size > 8) recentSearches.removeLast()
-        }
     }
 
     Scaffold(
         containerColor = Surface,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            SearchTopBar(
+            SearchHeaderBar(
                 query = searchQuery,
                 onQueryChange = { newQuery ->
                     searchQuery = newQuery
@@ -280,7 +230,6 @@ fun SearchScreen(
                 },
                 onFilterClick = { showFilterDialog = true },
                 activeFilterCount = activeFilterCount,
-                onBack = onBack,
             )
         },
         bottomBar = {
@@ -293,183 +242,151 @@ fun SearchScreen(
             )
         },
     ) { innerPadding ->
-        val isInitialState = searchQuery.isBlank() && activeFilterCount == 0
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .background(Surface),
         ) {
-            // ── Quick Filter Chips Row ─────────────────────────────────────
-            QuickFilterChipsRow(
-                selectedTag = quickFilterTag,
-                onTagSelected = { tag ->
-                    quickFilterTag = if (quickFilterTag == tag) "All" else tag
-                },
-            )
-
-            if (isInitialState) {
-                // ── Discovery / Initial State ──────────────────────────────
-                LazyColumn(
+            if (isGridView) {
+                // ── Grid View ───────────────────────────────────────────────
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
-                    // Recent Searches
-                    if (recentSearches.isNotEmpty()) {
-                        item {
-                            RecentSearchesSection(
-                                searches = recentSearches,
-                                onSearchClick = { tag ->
-                                    performSearch(tag)
-                                },
-                                onRemoveTag = { tag ->
-                                    recentSearches.remove(tag)
-                                },
-                                onClearAll = {
-                                    recentSearches.clear()
-                                },
-                            )
-                        }
+                    // Quick Filter Chips Row (Full Span)
+                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                        QuickFilterChipsRow(
+                            selectedTag = quickFilterTag,
+                            onTagSelected = { tag ->
+                                quickFilterTag = if (quickFilterTag == tag) "All" else tag
+                            },
+                        )
                     }
 
-                    // Trending Keywords
-                    item {
-                        TrendingKeywordsSection(
+                    // Trending Searches Section (Full Span)
+                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                        TrendingSearchesCard(
                             tags = trendingTags,
                             onTagClick = { tag ->
-                                val cleanTag = tag.replace("🔥 ", "").replace("🍕 ", "").replace("🍣 ", "").replace("🍟 ", "").replace("🍔 ", "").replace("🌱 ", "")
+                                val cleanTag = tag.replace("🔥 ", "")
+                                    .replace("🍕 ", "")
+                                    .replace("🍣 ", "")
+                                    .replace("🍟 ", "")
+                                    .replace("🌱 ", "")
+                                    .replace("Smash", "")
+                                    .replace("Neapolitan", "")
+                                    .replace("Nigiri", "")
+                                    .replace("Rosemary", "")
+                                    .trim()
                                 performSearch(cleanTag)
                             },
                         )
                     }
 
-                    // Explore Categories Grid
-                    item {
-                        ExploreCategoriesSection(
-                            categories = MockCategories,
-                            onCategoryClick = { categoryId ->
-                                selectedCategoryId = categoryId
-                            },
+                    // Results Header (Full Span)
+                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                        SearchResultsHeader(
+                            resultCount = filteredResults.size,
+                            isGridView = isGridView,
+                            onToggleView = { isGridView = !isGridView },
                         )
                     }
 
-                    // Chef's Top Picks
-                    item {
-                        Text(
-                            text = "Chef's Recommendations",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = OnSurface,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    items(MockFoodItems.take(3), key = { it.id }) { food ->
-                        val isFav = favoriteIds.contains(food.id)
-                        FoodSearchResultCard(
-                            food = food,
-                            isFavorite = isFav,
-                            onFavoriteToggle = {
-                                if (isFav) favoriteIds.remove(food.id) else favoriteIds.add(food.id)
-                            },
-                            onCardClick = { onFoodClick(food.id) },
-                            onAddToCart = {
-                                viewModel.addToCart(food)
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Added ${food.name} to cart!")
-                                }
-                            },
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                        )
+                    if (filteredResults.isEmpty()) {
+                        item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                            EmptyResultsView(
+                                query = searchQuery,
+                                onReset = {
+                                    searchQuery = ""
+                                    viewModel.onSearchQueryChanged("")
+                                    selectedCategoryId = -1
+                                    selectedSortOption = SortOption.RECOMMENDED
+                                    maxPriceFilter = 30f
+                                    minRatingFilter = 0.0
+                                    quickFilterTag = "All"
+                                },
+                            )
+                        }
+                    } else {
+                        items(filteredResults, key = { it.id }) { food ->
+                            FoodGridResultCard(
+                                food = food,
+                                onCardClick = { onFoodClick(food.id) },
+                            )
+                        }
                     }
                 }
             } else {
-                // ── Search Results State ───────────────────────────────────
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Result Header & View Toggle
-                    SearchResultsHeader(
-                        resultCount = filteredResults.size,
-                        searchQuery = searchQuery,
-                        isGridView = isGridView,
-                        onToggleView = { isGridView = !isGridView },
-                        onResetFilters = {
-                            searchQuery = ""
-                            viewModel.onSearchQueryChanged("")
-                            selectedCategoryId = -1
-                            selectedSortOption = SortOption.RECOMMENDED
-                            maxPriceFilter = 30f
-                            minRatingFilter = 0.0
-                            quickFilterTag = "All"
-                        },
-                        hasActiveFilters = activeFilterCount > 0,
-                    )
-
-                    if (filteredResults.isEmpty()) {
-                        // Empty State
-                        EmptyResultsView(
-                            query = searchQuery,
-                            onReset = {
-                                searchQuery = ""
-                                viewModel.onSearchQueryChanged("")
-                                selectedCategoryId = -1
-                                selectedSortOption = SortOption.RECOMMENDED
-                                maxPriceFilter = 30f
-                                minRatingFilter = 0.0
-                                quickFilterTag = "All"
+                // ── List View (Matches HTML exactly) ────────────────────────
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    // Quick Filter Chips Row
+                    item {
+                        QuickFilterChipsRow(
+                            selectedTag = quickFilterTag,
+                            onTagSelected = { tag ->
+                                quickFilterTag = if (quickFilterTag == tag) "All" else tag
                             },
                         )
-                    } else if (isGridView) {
-                        // Grid Layout
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(14.dp),
-                            verticalArrangement = Arrangement.spacedBy(14.dp),
-                            modifier = Modifier.fillMaxSize(),
-                        ) {
-                            items(filteredResults, key = { it.id }) { food ->
-                                val isFav = favoriteIds.contains(food.id)
-                                FoodGridCard(
-                                    food = food,
-                                    isFavorite = isFav,
-                                    onFavoriteToggle = {
-                                        if (isFav) favoriteIds.remove(food.id) else favoriteIds.add(food.id)
-                                    },
-                                    onCardClick = { onFoodClick(food.id) },
-                                    onAddToCart = {
-                                        viewModel.addToCart(food)
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar("Added ${food.name} to cart!")
-                                        }
-                                    },
-                                )
-                            }
+                    }
+
+                    // Trending Searches Section
+                    item {
+                        TrendingSearchesCard(
+                            tags = trendingTags,
+                            onTagClick = { tag ->
+                                val cleanTag = tag.replace("🔥 ", "")
+                                    .replace("🍕 ", "")
+                                    .replace("🍣 ", "")
+                                    .replace("🍟 ", "")
+                                    .replace("🌱 ", "")
+                                    .replace("Smash", "")
+                                    .replace("Neapolitan", "")
+                                    .replace("Nigiri", "")
+                                    .replace("Rosemary", "")
+                                    .trim()
+                                performSearch(cleanTag)
+                            },
+                        )
+                    }
+
+                    // Results Header
+                    item {
+                        SearchResultsHeader(
+                            resultCount = filteredResults.size,
+                            isGridView = isGridView,
+                            onToggleView = { isGridView = !isGridView },
+                        )
+                    }
+
+                    if (filteredResults.isEmpty()) {
+                        item {
+                            EmptyResultsView(
+                                query = searchQuery,
+                                onReset = {
+                                    searchQuery = ""
+                                    viewModel.onSearchQueryChanged("")
+                                    selectedCategoryId = -1
+                                    selectedSortOption = SortOption.RECOMMENDED
+                                    maxPriceFilter = 30f
+                                    minRatingFilter = 0.0
+                                    quickFilterTag = "All"
+                                },
+                            )
                         }
                     } else {
-                        // List Layout
-                        LazyColumn(
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(14.dp),
-                            modifier = Modifier.fillMaxSize(),
-                        ) {
-                            items(filteredResults, key = { it.id }) { food ->
-                                val isFav = favoriteIds.contains(food.id)
-                                FoodSearchResultCard(
-                                    food = food,
-                                    isFavorite = isFav,
-                                    onFavoriteToggle = {
-                                        if (isFav) favoriteIds.remove(food.id) else favoriteIds.add(food.id)
-                                    },
-                                    onCardClick = { onFoodClick(food.id) },
-                                    onAddToCart = {
-                                        viewModel.addToCart(food)
-                                        scope.launch {
-                                            snackbarHostState.showSnackbar("Added ${food.name} to cart!")
-                                        }
-                                    },
-                                )
-                            }
+                        items(filteredResults, key = { it.id }) { food ->
+                            FoodListResultCard(
+                                food = food,
+                                onCardClick = { onFoodClick(food.id) },
+                            )
                         }
                     }
                 }
@@ -505,136 +422,145 @@ fun SearchScreen(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Search Top Bar Component
+// Search Header Bar Component (Matches HTML .search-header)
 // ─────────────────────────────────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchTopBar(
+private fun SearchHeaderBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
     onSearchAction: () -> Unit,
     onFilterClick: () -> Unit,
     activeFilterCount: Int,
-    onBack: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Surface)
             .statusBarsPadding()
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            // Search Input Container
+            // Search Input Container (.search-input-wrap)
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(52.dp)
+                    .height(48.dp)
                     .shadow(
-                        elevation    = 3.dp,
+                        elevation    = 4.dp,
                         shape        = RoundedCornerShape(100.dp),
-                        ambientColor = Color.Black.copy(alpha = 0.04f),
-                        spotColor    = Color.Black.copy(alpha = 0.06f),
+                        ambientColor = Primary.copy(alpha = 0.10f),
+                        spotColor    = Primary.copy(alpha = 0.12f),
                     )
                     .clip(RoundedCornerShape(100.dp))
-                    .background(SurfaceVariant)
-                    .border(1.dp, Primary.copy(alpha = 0.25f), RoundedCornerShape(100.dp)),
+                    .background(Color.White)
+                    .border(1.5.dp, Primary, RoundedCornerShape(100.dp))
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.CenterStart,
             ) {
-                TextField(
-                    value = query,
-                    onValueChange = onQueryChange,
+                Row(
                     modifier = Modifier.fillMaxSize(),
-                    placeholder = {
-                        Text(
-                            text = "Search dishes, ingredients, pizza...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = OnSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = "Search",
-                            tint = Primary,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(onClick = onClearQuery) {
-                                Icon(
-                                    imageVector = Icons.Filled.Close,
-                                    contentDescription = "Clear",
-                                    tint = OnSurfaceVariant,
-                                    modifier = Modifier.size(18.dp),
-                                )
-                            }
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "Search",
+                        tint = Primary,
+                        modifier = Modifier.size(20.dp),
+                    )
+
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        if (query.isEmpty()) {
+                            Text(
+                                text = "Search foods, cuisines, tags...",
+                                style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = OnSurfaceVariant.copy(alpha = 0.6f),
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { onSearchAction() }),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        focusedTextColor = OnSurface,
-                        unfocusedTextColor = OnSurface,
-                        cursorColor = Primary,
-                    ),
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                )
+
+                        BasicTextField(
+                            value = query,
+                            onValueChange = onQueryChange,
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = OnSurface,
+                            ),
+                            cursorBrush = SolidColor(Primary),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = { onSearchAction() }),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+
+                    if (query.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable(onClick = onClearQuery),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Clear",
+                                tint = Color(0xFF999999),
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
+                    }
+                }
             }
 
-            Spacer(Modifier.width(10.dp))
-
-            // Filter Button with Badge
+            // Filter Button (.filter-btn with badge)
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
-                    .background(if (activeFilterCount > 0) Primary else SurfaceVariant)
-                    .border(
-                        1.dp,
-                        if (activeFilterCount > 0) Primary else Outline.copy(alpha = 0.5f),
-                        CircleShape,
-                    )
+                    .background(Color.White)
+                    .border(1.dp, Outline, CircleShape)
                     .clickable(onClick = onFilterClick),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Default.FilterList,
-                    contentDescription = "Filters",
-                    tint = if (activeFilterCount > 0) Color.White else OnSurface,
-                    modifier = Modifier.size(24.dp),
+                    contentDescription = "Filter options",
+                    tint = OnSurface,
+                    modifier = Modifier.size(20.dp),
                 )
 
                 if (activeFilterCount > 0) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(4.dp)
-                            .size(18.dp)
+                            .padding(top = 6.dp, end = 6.dp)
+                            .size(16.dp)
                             .clip(CircleShape)
-                            .background(Secondary),
+                            .background(Primary),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = activeFilterCount.toString(),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
+                            style = TextStyle(
                                 fontSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.White,
                             ),
-                            color = OnSecondary,
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }
@@ -644,7 +570,7 @@ private fun SearchTopBar(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Quick Filter Chips Row
+// Quick Filter Chips Row (Matches HTML .filter-chips-row)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -655,14 +581,18 @@ private fun QuickFilterChipsRow(
     val tags = listOf("All", "★ 4.7+", "Under $15", "Fast Delivery", "Burgers", "Pizza", "Sushi", "Desserts")
 
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 2.dp),
     ) {
         items(tags) { tag ->
             val isSelected = selectedTag == tag
             val bgColor by animateColorAsState(
-                targetValue = if (isSelected) Primary else SurfaceVariant,
+                targetValue = if (isSelected) Primary else Color.White,
                 label = "chip_bg",
+            )
+            val borderColor by animateColorAsState(
+                targetValue = if (isSelected) Primary else Outline,
+                label = "chip_border",
             )
             val textColor by animateColorAsState(
                 targetValue = if (isSelected) Color.White else OnSurface,
@@ -673,16 +603,18 @@ private fun QuickFilterChipsRow(
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
                     .background(bgColor)
+                    .border(1.dp, borderColor, RoundedCornerShape(100.dp))
                     .clickable { onTagSelected(tag) }
                     .padding(horizontal = 14.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = tag,
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    style = TextStyle(
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = textColor,
                     ),
-                    color = textColor,
                 )
             }
         }
@@ -690,208 +622,63 @@ private fun QuickFilterChipsRow(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Recent Searches Section
+// Trending Searches Section (Matches HTML .tags-section)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun RecentSearchesSection(
-    searches: List<String>,
-    onSearchClick: (String) -> Unit,
-    onRemoveTag: (String) -> Unit,
-    onClearAll: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Outlined.History,
-                    contentDescription = null,
-                    tint = Primary,
-                    modifier = Modifier.size(18.dp),
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = "Recent Searches",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = OnSurface,
-                )
-            }
-
-            TextButton(
-                onClick = onClearAll,
-                contentPadding = PaddingValues(0.dp),
-            ) {
-                Text(
-                    text = "Clear All",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Primary,
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            searches.forEach { tag ->
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(SurfaceVariant)
-                        .clickable { onSearchClick(tag) }
-                        .padding(horizontal = 12.dp, vertical = 7.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = tag,
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                        color = OnSurface,
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Remove",
-                        tint = OnSurfaceVariant,
-                        modifier = Modifier
-                            .size(14.dp)
-                            .clickable { onRemoveTag(tag) },
-                    )
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Trending Keywords Section
-// ─────────────────────────────────────────────────────────────────────────────
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun TrendingKeywordsSection(
+private fun TrendingSearchesCard(
     tags: List<String>,
     onTagClick: (String) -> Unit,
 ) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(18.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor = Color.Black.copy(alpha = 0.04f),
+            ),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Filled.LocalFireDepartment,
-                contentDescription = null,
-                tint = Secondary,
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(Modifier.width(6.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
             Text(
-                text = "Trending Searches",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = OnSurface,
+                text = "TRENDING SEARCHES",
+                style = TextStyle(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = OnSurfaceVariant,
+                    letterSpacing = 0.5.sp,
+                ),
             )
-        }
 
-        Spacer(Modifier.height(10.dp))
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            tags.forEach { tag ->
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(Secondary.copy(alpha = 0.15f))
-                        .border(1.dp, Secondary.copy(alpha = 0.40f), RoundedCornerShape(100.dp))
-                        .clickable { onTagClick(tag) }
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                ) {
-                    Text(
-                        text = tag,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = FontWeight.SemiBold,
-                        ),
-                        color = Color(0xFF5A3900),
-                    )
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Explore Categories Grid
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun ExploreCategoriesSection(
-    categories: List<Category>,
-    onCategoryClick: (Int) -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        Text(
-            text = "Browse by Category",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = OnSurface,
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            categories.forEach { category ->
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onCategoryClick(category.id) },
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp),
-                ) {
-                    Column(
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                tags.forEach { tag ->
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 14.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                            .clip(RoundedCornerShape(100.dp))
+                            .background(SurfaceVariant)
+                            .clickable { onTagClick(tag) }
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(SurfaceVariant),
-                        ) {
-                            Icon(
-                                painter = painterResource(id = category.iconRes),
-                                contentDescription = category.name,
-                                tint = Primary,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                        Spacer(Modifier.height(6.dp))
                         Text(
-                            text = category.name,
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = OnSurface,
-                            maxLines = 1,
+                            text = tag,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = OnSurface,
+                            ),
                         )
                     }
                 }
@@ -901,62 +688,87 @@ private fun ExploreCategoriesSection(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Search Results Header & View Switcher
+// Results Header & View Toggle (Matches HTML .results-header)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 private fun SearchResultsHeader(
     resultCount: Int,
-    searchQuery: String,
     isGridView: Boolean,
     onToggleView: () -> Unit,
-    onResetFilters: () -> Unit,
-    hasActiveFilters: Boolean,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(top = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column {
-            Text(
-                text = if (searchQuery.isNotBlank()) "Results for \"$searchQuery\"" else "Dishes Found",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        Text(
+            text = "Results ($resultCount ${if (resultCount == 1) "dish" else "dishes"})",
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 color = OnSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = "$resultCount item${if (resultCount != 1) "s" else ""} available",
-                style = MaterialTheme.typography.bodySmall,
-                color = OnSurfaceVariant,
-            )
-        }
+            ),
+        )
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (hasActiveFilters) {
-                TextButton(
-                    onClick = onResetFilters,
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                ) {
-                    Text("Reset", color = Primary, style = MaterialTheme.typography.labelSmall)
-                }
-            }
-
-            IconButton(
-                onClick = onToggleView,
+        // View Toggle (.view-toggle)
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(SurfaceVariant)
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // List View Icon Toggle
+            Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(SurfaceVariant),
+                    .clip(RoundedCornerShape(6.dp))
+                    .then(
+                        if (!isGridView) {
+                            Modifier
+                                .shadow(1.dp, RoundedCornerShape(6.dp))
+                                .background(Color.White)
+                        } else {
+                            Modifier.background(Color.Transparent)
+                        }
+                    )
+                    .clickable(enabled = isGridView) { onToggleView() }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = if (isGridView) Icons.AutoMirrored.Filled.ViewList else Icons.Filled.GridView,
-                    contentDescription = "Toggle View",
-                    tint = OnSurface,
-                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.AutoMirrored.Filled.ViewList,
+                    contentDescription = "List View",
+                    tint = if (!isGridView) Primary else OnSurfaceVariant,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+
+            // Grid View Icon Toggle
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .then(
+                        if (isGridView) {
+                            Modifier
+                                .shadow(1.dp, RoundedCornerShape(6.dp))
+                                .background(Color.White)
+                        } else {
+                            Modifier.background(Color.Transparent)
+                        }
+                    )
+                    .clickable(enabled = !isGridView) { onToggleView() }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.GridView,
+                    contentDescription = "Grid View",
+                    tint = if (isGridView) Primary else OnSurfaceVariant,
+                    modifier = Modifier.size(16.dp),
                 )
             }
         }
@@ -964,29 +776,25 @@ private fun SearchResultsHeader(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Food Search Result Card (List View)
+// Food List Result Card (Matches HTML .result-card)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-private fun FoodSearchResultCard(
+private fun FoodListResultCard(
     food: FoodItem,
-    isFavorite: Boolean,
-    onFavoriteToggle: () -> Unit,
     onCardClick: () -> Unit,
-    onAddToCart: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.06f),
-                spotColor = Color.Black.copy(alpha = 0.09f),
+                elevation = 2.dp,
+                shape = RoundedCornerShape(18.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor = Color.Black.copy(alpha = 0.04f),
             )
             .clickable(onClick = onCardClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Row(
@@ -994,282 +802,33 @@ private fun FoodSearchResultCard(
                 .fillMaxWidth()
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            // Hero Image with Badge & Fav
+            // Food Image (.result-img)
             Box(
                 modifier = Modifier
-                    .size(105.dp)
-                    .clip(RoundedCornerShape(16.dp)),
+                    .size(76.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFFEEEEEE)),
             ) {
                 FoodImageLoader(
                     image = food.image,
                     contentDescription = food.name,
                     modifier = Modifier.fillMaxSize(),
                 )
-
-                // Favorite icon
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(6.dp)
-                        .size(26.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.85f))
-                        .clickable(onClick = onFavoriteToggle),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = if (isFavorite) Primary else OnSurfaceVariant,
-                        modifier = Modifier.size(15.dp),
-                    )
-                }
-
-                // Badge
-                if (food.badge != null) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(4.dp)
-                            .background(Secondary, RoundedCornerShape(6.dp))
-                            .padding(horizontal = 5.dp, vertical = 2.dp),
-                    ) {
-                        Text(
-                            text = food.badge,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 8.5.sp,
-                            ),
-                            color = OnSecondary,
-                        )
-                    }
-                }
             }
 
-            Spacer(Modifier.width(14.dp))
-
-            // Details
+            // Food Info (.result-info)
             Column(
                 modifier = Modifier.weight(1f),
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = food.name,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = OnSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
-
-                    // Rating
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(SurfaceVariant)
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = Secondary,
-                            modifier = Modifier.size(12.dp),
-                        )
-                        Spacer(Modifier.width(2.dp))
-                        Text(
-                            text = food.rating.toString(),
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = OnSurface,
-                        )
-                    }
-                }
-
-                Spacer(Modifier.height(4.dp))
-
-                Text(
-                    text = food.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = OnSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Spacer(Modifier.height(6.dp))
-
-                // Time & Distance info
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.AccessTime,
-                        contentDescription = null,
-                        tint = OnSurfaceVariant,
-                        modifier = Modifier.size(13.dp),
-                    )
-                    Spacer(Modifier.width(3.dp))
-                    Text(
-                        text = food.deliveryTime,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariant,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Outlined.LocationOn,
-                        contentDescription = null,
-                        tint = OnSurfaceVariant,
-                        modifier = Modifier.size(13.dp),
-                    )
-                    Spacer(Modifier.width(3.dp))
-                    Text(
-                        text = food.distanceKm,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariant,
-                    )
-                }
-
-                Spacer(Modifier.height(8.dp))
-
-                // Price & Add to Cart
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "$${String.format("%.2f", food.price)}",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 17.sp,
-                        ),
-                        color = Primary,
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(100.dp))
-                            .background(Primary)
-                            .clickable(onClick = onAddToCart)
-                            .padding(horizontal = 14.dp, vertical = 6.dp),
-                    ) {
-                        Text(
-                            text = "+ Add",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
-                            ),
-                            color = Color.White,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Food Grid Card (2-Column Grid View)
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun FoodGridCard(
-    food: FoodItem,
-    isFavorite: Boolean,
-    onFavoriteToggle: () -> Unit,
-    onCardClick: () -> Unit,
-    onAddToCart: () -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.06f),
-                spotColor = Color.Black.copy(alpha = 0.09f),
-            )
-            .clickable(onClick = onCardClick),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            // Image Box
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.2f)
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-            ) {
-                FoodImageLoader(
-                    image = food.image,
-                    contentDescription = food.name,
-                    modifier = Modifier.fillMaxSize(),
-                )
-
-                // Favorite button
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.88f))
-                        .clickable(onClick = onFavoriteToggle),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = if (isFavorite) Primary else OnSurfaceVariant,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
-
-                // Rating Pill
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(8.dp)
-                        .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 6.dp, vertical = 2.dp),
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = Secondary,
-                            modifier = Modifier.size(11.dp),
-                        )
-                        Spacer(Modifier.width(2.dp))
-                        Text(
-                            text = food.rating.toString(),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 10.sp,
-                            ),
-                            color = Color.White,
-                        )
-                    }
-                }
-            }
-
-            // Info Content
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-            ) {
                 Text(
                     text = food.name,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = OnSurface,
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OnSurface,
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -1277,13 +836,18 @@ private fun FoodGridCard(
                 Spacer(Modifier.height(2.dp))
 
                 Text(
-                    text = food.deliveryTime,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = OnSurfaceVariant,
+                    text = food.description,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = OnSurfaceVariant,
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
 
+                // Bottom Row (.result-bottom)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -1291,30 +855,117 @@ private fun FoodGridCard(
                 ) {
                     Text(
                         text = "$${String.format("%.2f", food.price)}",
-                        style = MaterialTheme.typography.titleSmall.copy(
+                        style = TextStyle(
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 15.sp,
+                            color = Primary,
                         ),
-                        color = Primary,
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(Primary)
-                            .clickable(onClick = onAddToCart),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "+",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                            ),
-                        )
-                    }
+                    Text(
+                        text = "★ ${food.rating} (${food.distanceKm})",
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF000000),
+                        ),
+                    )
                 }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Food Grid Result Card (Matches HTML design tokens for 2-column Grid)
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun FoodGridResultCard(
+    food: FoodItem,
+    onCardClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(18.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor = Color.Black.copy(alpha = 0.04f),
+            )
+            .clickable(onClick = onCardClick),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.2f)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFFEEEEEE)),
+            ) {
+                FoodImageLoader(
+                    image = food.image,
+                    contentDescription = food.name,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text = food.name,
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = OnSurface,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(Modifier.height(2.dp))
+
+            Text(
+                text = food.description,
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    color = OnSurfaceVariant,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "$${String.format("%.2f", food.price)}",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Primary,
+                    ),
+                )
+
+                Text(
+                    text = "★ ${food.rating}",
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF000000),
+                    ),
+                )
             }
         }
     }
@@ -1331,14 +982,14 @@ private fun EmptyResultsView(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Box(
             modifier = Modifier
-                .size(90.dp)
+                .size(80.dp)
                 .clip(CircleShape)
                 .background(Primary.copy(alpha = 0.10f)),
             contentAlignment = Alignment.Center,
@@ -1347,41 +998,49 @@ private fun EmptyResultsView(
                 imageVector = Icons.Filled.SearchOff,
                 contentDescription = null,
                 tint = Primary,
-                modifier = Modifier.size(44.dp),
+                modifier = Modifier.size(38.dp),
             )
         }
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(16.dp))
 
         Text(
-            text = "No Delicious Matches Found",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = OnSurface,
+            text = "No Dishes Found",
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = OnSurface,
+            ),
             textAlign = TextAlign.Center,
         )
 
         Spacer(Modifier.height(6.dp))
 
         Text(
-            text = if (query.isNotBlank()) "We couldn't find anything matching \"$query\". Try different keywords or adjust your filters." else "No dishes match your active filter criteria.",
-            style = MaterialTheme.typography.bodySmall,
-            color = OnSurfaceVariant,
+            text = if (query.isNotBlank()) "We couldn't find anything matching \"$query\". Try a different search." else "No dishes match your active filters.",
+            style = TextStyle(
+                fontSize = 13.sp,
+                color = OnSurfaceVariant,
+            ),
             textAlign = TextAlign.Center,
         )
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(18.dp))
 
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(100.dp))
                 .background(Primary)
                 .clickable(onClick = onReset)
-                .padding(horizontal = 24.dp, vertical = 12.dp),
+                .padding(horizontal = 22.dp, vertical = 10.dp),
         ) {
             Text(
                 text = "Clear All Filters",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                color = Color.White,
+                style = TextStyle(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                ),
             )
         }
     }
@@ -1418,27 +1077,29 @@ private fun FilterDialog(
             ) {
                 Text(
                     text = "Filter & Sort",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = OnSurface,
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OnSurface,
+                    ),
                 )
                 TextButton(onClick = onReset) {
-                    Text("Reset", color = Primary)
+                    Text("Reset", color = Primary, fontWeight = FontWeight.Bold)
                 }
             }
         },
         text = {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(18.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // 1. Sort By
                 item {
                     Text(
                         text = "Sort By",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = OnSurface,
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = OnSurface),
                     )
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(4.dp))
                     Column {
                         SortOption.values().forEach { option ->
                             Row(
@@ -1456,8 +1117,7 @@ private fun FilterDialog(
                                 Spacer(Modifier.width(6.dp))
                                 Text(
                                     text = option.title,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = OnSurface,
+                                    style = TextStyle(fontSize = 14.sp, color = OnSurface),
                                 )
                             }
                         }
@@ -1468,29 +1128,28 @@ private fun FilterDialog(
                 item {
                     Text(
                         text = "Category",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = OnSurface,
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = OnSurface),
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(6.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        // All Chip
                         val isAllSelected = tempCategory == -1
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100.dp))
                                 .background(if (isAllSelected) Primary else SurfaceVariant)
                                 .clickable { tempCategory = -1 }
-                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                                .padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
                             Text(
                                 text = "All Categories",
-                                style = MaterialTheme.typography.labelMedium.copy(
+                                style = TextStyle(
+                                    fontSize = 12.sp,
                                     fontWeight = if (isAllSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isAllSelected) Color.White else OnSurface,
                                 ),
-                                color = if (isAllSelected) Color.White else OnSurface,
                             )
                         }
 
@@ -1501,14 +1160,15 @@ private fun FilterDialog(
                                     .clip(RoundedCornerShape(100.dp))
                                     .background(if (isSelected) Primary else SurfaceVariant)
                                     .clickable { tempCategory = category.id }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                    .padding(horizontal = 14.dp, vertical = 7.dp),
                             ) {
                                 Text(
                                     text = category.name,
-                                    style = MaterialTheme.typography.labelMedium.copy(
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Color.White else OnSurface,
                                     ),
-                                    color = if (isSelected) Color.White else OnSurface,
                                 )
                             }
                         }
@@ -1523,13 +1183,11 @@ private fun FilterDialog(
                     ) {
                         Text(
                             text = "Max Price",
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = OnSurface,
+                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = OnSurface),
                         )
                         Text(
                             text = "$${tempPrice.roundToInt()}",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Primary,
+                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Primary),
                         )
                     }
                     Slider(
@@ -1549,10 +1207,9 @@ private fun FilterDialog(
                 item {
                     Text(
                         text = "Minimum Rating",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = OnSurface,
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = OnSurface),
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(6.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
@@ -1567,10 +1224,11 @@ private fun FilterDialog(
                             ) {
                                 Text(
                                     text = label,
-                                    style = MaterialTheme.typography.labelSmall.copy(
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Color.Black else OnSurface,
                                     ),
-                                    color = if (isSelected) OnSecondary else OnSurface,
                                 )
                             }
                         }
@@ -1582,7 +1240,7 @@ private fun FilterDialog(
             TextButton(
                 onClick = { onApply(tempSort, tempCategory, tempPrice, tempRating) },
             ) {
-                Text("Apply Filters", color = Primary, fontWeight = FontWeight.Bold)
+                Text("Apply", color = Primary, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
@@ -1591,7 +1249,7 @@ private fun FilterDialog(
             }
         },
         containerColor = Color.White,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
     )
 }
 

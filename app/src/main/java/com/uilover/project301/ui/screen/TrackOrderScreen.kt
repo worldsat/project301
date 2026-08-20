@@ -27,15 +27,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DirectionsBike
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.DirectionsBike
 import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
-import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -111,7 +111,7 @@ private val ORDER_STEPS = listOf(
         state    = StepState.DONE,
     ),
     StatusStep(
-        icon     = Icons.Outlined.ReceiptLong,
+        icon     = Icons.AutoMirrored.Outlined.ReceiptLong,
         label    = "Preparing",
         subtitle = "Your food is being prepared",
         state    = StepState.ACTIVE,
@@ -128,14 +128,19 @@ private val ORDER_STEPS = listOf(
 // Track Order Screen
 // ─────────────────────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackOrderScreen(
     onHomeClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
 ) {
     Scaffold(
         containerColor = Surface,
+        topBar         = {
+            TrackOrderAppBar(onMenuClick = onMenuClick)
+        },
         bottomBar      = {
             AppBottomNav(
                 currentScreen  = Screen.ORDERS,
@@ -152,9 +157,6 @@ fun TrackOrderScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            // ── App Bar ───────────────────────────────────────────────────────
-            TrackOrderAppBar()
-
             // ── Real OSM Map ──────────────────────────────────────────────────
             OsmMapView(
                 modifier = Modifier
@@ -188,7 +190,9 @@ fun TrackOrderScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TrackOrderAppBar() {
+private fun TrackOrderAppBar(
+    onMenuClick: () -> Unit = {},
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -201,7 +205,7 @@ private fun TrackOrderAppBar() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector        = Icons.Outlined.Menu,
                     contentDescription = "Menu",
@@ -332,7 +336,7 @@ private fun EtaCard(modifier: Modifier = Modifier) {
                     .background(Secondary),
             ) {
                 Icon(
-                    imageVector        = Icons.Outlined.DirectionsBike,
+                    imageVector        = Icons.AutoMirrored.Outlined.DirectionsBike,
                     contentDescription = "Rider",
                     tint               = Color.White,
                     modifier           = Modifier.size(28.dp),

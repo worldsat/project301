@@ -5,10 +5,10 @@ import com.uilover.project301.R
 // ── Categories ───────────────────────────────────────────────────────────────
 
 val MockCategories = listOf(
-    Category(id = 1, name = "Pizza",    iconRes = R.drawable.ic_category_pizza),
-    Category(id = 2, name = "Sushi",    iconRes = R.drawable.ic_category_sushi),
-    Category(id = 3, name = "Burgers",  iconRes = R.drawable.ic_category_burger),
-    Category(id = 4, name = "Desserts", iconRes = R.drawable.ic_category_dessert),
+    Category(id = 1, name = "Pizza",    iconRes = R.drawable.ic_category_pizza,   emoji = "🍕"),
+    Category(id = 2, name = "Sushi",    iconRes = R.drawable.ic_category_sushi,   emoji = "🍣"),
+    Category(id = 3, name = "Burgers",  iconRes = R.drawable.ic_category_burger,  emoji = "🍔"),
+    Category(id = 4, name = "Desserts", iconRes = R.drawable.ic_category_dessert, emoji = "🍰"),
 )
 
 // ── Food Items – using LOCAL drawable resources ───────────────────────────────
@@ -38,7 +38,7 @@ val MockFoodItems = listOf(
         categoryId   = 3,
         badge        = "BEST SELLER",
         isPopular    = true,
-        ingredients  = listOf("Wagyu Beef", "House Pickles", "Secret Sauce", "Brioche Bun"),
+        ingredients  = listOf("Wagyu Beef", "House Pickles", "Secret Sauce", "Brioche Bun", "Aged Cheddar"),
         distanceKm   = "1.5 km",
         deliveryTime = "15-25 min",
     ),

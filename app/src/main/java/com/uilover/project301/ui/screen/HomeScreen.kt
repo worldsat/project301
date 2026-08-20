@@ -3,6 +3,7 @@ package com.uilover.project301.ui.screen
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,18 +24,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -43,14 +36,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -60,9 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,16 +56,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import com.uilover.project301.R
 import com.uilover.project301.data.Category
 import com.uilover.project301.data.FoodItem
 import com.uilover.project301.data.ImageSource
 import com.uilover.project301.data.Screen
 import com.uilover.project301.ui.component.AppBottomNav
-import com.uilover.project301.ui.theme.OnSecondary
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
+import com.uilover.project301.ui.theme.Outline
 import com.uilover.project301.ui.theme.Primary
+import com.uilover.project301.ui.theme.PrimaryLight
 import com.uilover.project301.ui.theme.Secondary
 import com.uilover.project301.ui.theme.Surface
 import com.uilover.project301.ui.theme.SurfaceVariant
@@ -90,7 +75,6 @@ import com.uilover.project301.viewmodel.HomeViewModel
 // Root Screen
 // ─────────────────────────────────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
@@ -98,13 +82,14 @@ fun HomeScreen(
     onSearchClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = Surface,
         topBar = {
-            HomeTopBar()
+            HomeTopBar(onMenuClick = onMenuClick)
         },
         bottomBar = {
             AppBottomNav(
@@ -120,15 +105,14 @@ fun HomeScreen(
             modifier            = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding      = PaddingValues(bottom = 16.dp),
+            contentPadding      = PaddingValues(top = 4.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // ── Search Bar ─────────────────────────────────────────────────
             item {
                 SearchBar(
-                    query        = uiState.searchQuery,
-                    onQuery      = viewModel::onSearchQueryChanged,
                     onSearchClick = onSearchClick,
-                    modifier     = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    modifier      = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
@@ -139,18 +123,21 @@ fun HomeScreen(
                     selectedCategoryId = uiState.selectedCategoryId,
                     onCategorySelected = viewModel::onCategorySelected,
                 )
-                Spacer(modifier = Modifier.height(20.dp))
             }
 
             // ── Section Header ─────────────────────────────────────────────
             item {
                 Text(
                     text     = "Popular Near You",
-                    style    = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    style    = MaterialTheme.typography.titleMedium.copy(
+                        fontSize   = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
                     color    = OnSurface,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 4.dp),
                 )
-                Spacer(modifier = Modifier.height(12.dp))
             }
 
             // ── Food Cards ─────────────────────────────────────────────────
@@ -162,9 +149,7 @@ fun HomeScreen(
                     food        = food,
                     onAddClick  = { viewModel.addToCart(food) },
                     onCardClick = { onFoodClick(food.id) },
-                    modifier    = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 14.dp),
+                    modifier    = Modifier.padding(horizontal = 16.dp),
                 )
             }
         }
@@ -177,7 +162,9 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar() {
+private fun HomeTopBar(
+    onMenuClick: () -> Unit = {},
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -190,7 +177,7 @@ private fun HomeTopBar() {
             )
         },
         navigationIcon = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector        = Icons.Outlined.Menu,
                     contentDescription = "Menu",
@@ -199,7 +186,7 @@ private fun HomeTopBar() {
             }
         },
         actions = {
-            Spacer(modifier = Modifier.width(48.dp))
+            Spacer(modifier = Modifier.width(40.dp))
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Surface,
@@ -208,20 +195,16 @@ private fun HomeTopBar() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Search Bar
+// Search Bar (Matching home_screen.html)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 private fun SearchBar(
-    query: String,
-    onQuery: (String) -> Unit,
-    onSearchClick: () -> Unit = {},
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TextField(
-        value         = query,
-        onValueChange = onQuery,
-        modifier      = modifier
+    Box(
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .shadow(
@@ -230,58 +213,40 @@ private fun SearchBar(
                 ambientColor = Color.Black.copy(alpha = 0.05f),
                 spotColor    = Color.Black.copy(alpha = 0.08f),
             )
-            .background(SurfaceVariant, RoundedCornerShape(100.dp))
+            .clip(RoundedCornerShape(100.dp))
+            .background(SurfaceVariant)
             .border(
                 width = 1.dp,
                 color = Primary.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(100.dp),
             )
-            .clickable { onSearchClick() },
-        placeholder   = {
+            .clickable(onClick = onSearchClick)
+            .padding(horizontal = 18.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Row(
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                imageVector        = Icons.Outlined.Search,
+                contentDescription = "Search",
+                tint               = Primary,
+                modifier           = Modifier.size(20.dp),
+            )
             Text(
                 text  = "What are you craving?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = OnSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 15.sp,
+                    color    = OnSurfaceVariant,
+                ),
             )
-        },
-        leadingIcon   = {
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    imageVector        = Icons.Outlined.Search,
-                    contentDescription = "Search",
-                    tint               = Primary,
-                    modifier           = Modifier.size(22.dp),
-                )
-            }
-        },
-        trailingIcon  = {
-            IconButton(onClick = onSearchClick) {
-                Icon(
-                    imageVector        = Icons.Default.Search,
-                    contentDescription = "Open Search",
-                    tint               = OnSurfaceVariant,
-                    modifier           = Modifier.size(18.dp),
-                )
-            }
-        },
-        singleLine    = true,
-        shape         = RoundedCornerShape(100.dp),
-        colors        = TextFieldDefaults.colors(
-            focusedContainerColor        = SurfaceVariant,
-            unfocusedContainerColor      = SurfaceVariant,
-            focusedIndicatorColor        = Color.Transparent,
-            unfocusedIndicatorColor      = Color.Transparent,
-            disabledIndicatorColor       = Color.Transparent,
-            focusedTextColor             = OnSurface,
-            unfocusedTextColor           = OnSurface,
-            cursorColor                  = Primary,
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-    )
+        }
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Category Row
+// Category Row & Chips (Horizontal Pills Matching home_screen.html)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -290,14 +255,13 @@ private fun CategoryRow(
     selectedCategoryId: Int,
     onCategorySelected: (Int) -> Unit,
 ) {
-    Row(
-        modifier              = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+    LazyRow(
+        modifier              = Modifier.fillMaxWidth(),
+        contentPadding        = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment     = Alignment.CenterVertically,
     ) {
-        categories.forEach { category ->
+        items(categories, key = { it.id }) { category ->
             CategoryChip(
                 category           = category,
                 isSelected         = category.id == selectedCategoryId,
@@ -314,58 +278,73 @@ private fun CategoryChip(
     onCategorySelected: (Int) -> Unit,
 ) {
     val bgColor by animateColorAsState(
-        targetValue  = if (isSelected) Secondary else Color(0xFFE2E2E2),
+        targetValue   = if (isSelected) Secondary else Color.White,
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label        = "chip_bg",
+        label         = "chip_bg",
     )
-    val iconTint by animateColorAsState(
-        targetValue  = if (isSelected) Color(0xFF231709) else Color(0xFF4A403A),
+    val borderColor by animateColorAsState(
+        targetValue   = if (isSelected) Secondary else Outline,
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label        = "chip_icon",
+        label         = "chip_border",
+    )
+    val contentColor by animateColorAsState(
+        targetValue   = if (isSelected) Color.Black else OnSurface,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label         = "chip_color",
     )
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
         modifier = Modifier
+            .shadow(
+                elevation    = if (isSelected) 3.dp else 1.dp,
+                shape        = RoundedCornerShape(100.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor    = Color.Black.copy(alpha = 0.06f),
+            )
+            .clip(RoundedCornerShape(100.dp))
+            .background(bgColor)
+            .border(
+                border = BorderStroke(1.dp, borderColor),
+                shape  = RoundedCornerShape(100.dp),
+            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication        = null,
-            ) { onCategorySelected(category.id) },
+            ) { onCategorySelected(category.id) }
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier         = Modifier
-                .size(62.dp)
-                .shadow(
-                    elevation    = if (isSelected) 4.dp else 2.dp,
-                    shape        = CircleShape,
-                    ambientColor = Color.Black.copy(alpha = 0.06f),
-                    spotColor    = Color.Black.copy(alpha = 0.08f),
-                )
-                .clip(CircleShape)
-                .background(bgColor),
+        Row(
+            verticalAlignment     = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                painter            = painterResource(id = category.iconRes),
-                contentDescription = category.name,
-                tint               = iconTint,
-                modifier           = Modifier.size(28.dp),
+            if (category.emoji.isNotEmpty()) {
+                Text(
+                    text     = category.emoji,
+                    fontSize = 18.sp,
+                )
+            } else {
+                Icon(
+                    painter            = painterResource(id = category.iconRes),
+                    contentDescription = category.name,
+                    tint               = contentColor,
+                    modifier           = Modifier.size(18.dp),
+                )
+            }
+            Text(
+                text  = category.name,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                    fontSize   = 14.sp,
+                ),
+                color = contentColor,
             )
         }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text  = category.name,
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                fontSize   = 13.sp,
-            ),
-            color = OnSurface,
-        )
     }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Food Card
+// Food Card (Matching home_screen.html)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -379,141 +358,187 @@ private fun FoodCard(
         modifier  = modifier
             .fillMaxWidth()
             .shadow(
-                elevation            = 5.dp,
-                shape                = RoundedCornerShape(24.dp),
-                ambientColor         = Color.Black.copy(alpha = 0.08f),
-                spotColor            = Color.Black.copy(alpha = 0.12f),
+                elevation    = 8.dp,
+                shape        = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.08f),
+                spotColor    = Color.Black.copy(alpha = 0.12f),
             )
             .clickable(onClick = onCardClick),
-        shape     = RoundedCornerShape(24.dp),
+        shape     = RoundedCornerShape(20.dp),
         colors    = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column {
-            // ── Hero image with overlays ───────────────────────────────────
+            // ── Hero Image with Badges ─────────────────────────────────────
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
+                    .height(180.dp)
+                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .background(Color(0xFFEAEAEA)),
             ) {
                 FoodImage(
-                    image             = food.image,
+                    image              = food.image,
                     contentDescription = food.name,
-                    modifier          = Modifier.fillMaxSize(),
+                    modifier           = Modifier.fillMaxSize(),
                 )
 
-                // Subtle bottom gradient for readability
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.08f),
-                                ),
-                            )
-                        )
-                )
-
-                // Badge (BEST SELLER / NEW)
-                if (food.badge != null) {
+                // Top-Left Badge (e.g. "BEST SELLER", "NEW")
+                if (!food.badge.isNullOrBlank()) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .padding(10.dp)
-                            .background(Secondary, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(12.dp)
+                            .clip(RoundedCornerShape(100.dp))
+                            .background(Primary)
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
                     ) {
                         Text(
-                            text  = food.badge,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize   = 10.sp,
+                            text          = food.badge.uppercase(),
+                            color         = Color.White,
+                            style         = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight    = FontWeight.ExtraBold,
+                                fontSize      = 10.sp,
+                                letterSpacing = 0.5.sp,
                             ),
-                            color = OnSecondary,
                         )
                     }
                 }
 
-                // Rating chip
+                // Bottom-Left Rating Chip
                 Box(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(10.dp)
-                        .background(Color.White.copy(alpha = 0.92f), RoundedCornerShape(10.dp))
-                        .padding(horizontal = 7.dp, vertical = 4.dp),
+                        .align(Alignment.BottomStart)
+                        .padding(12.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.Black.copy(alpha = 0.7f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
                         Text(
                             text  = "★",
-                            color = Secondary,
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                        )
-                        Spacer(Modifier.width(2.dp))
-                        Text(
-                            text  = food.rating.toString(),
+                            color = Color(0xFFFFD700),
                             style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize   = 11.sp,
+                                fontSize   = 12.sp,
+                                fontWeight = FontWeight.Bold,
                             ),
-                            color = OnSurface,
+                        )
+                        Text(
+                            text  = "${food.rating}",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize   = 12.sp,
+                            ),
                         )
                     }
                 }
             }
 
-            // ── Text content ───────────────────────────────────────────────
-            Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                Text(
-                    text     = food.name,
-                    style    = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color    = OnSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text     = food.description,
-                    style    = MaterialTheme.typography.bodySmall,
-                    color    = OnSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.height(12.dp))
-
-                // Price row
+            // ── Food Info Section ──────────────────────────────────────────
+            Column(
+                modifier            = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                // Title & Price row
                 Row(
-                    verticalAlignment   = Alignment.CenterVertically,
+                    modifier              = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier            = Modifier.fillMaxWidth(),
+                    verticalAlignment     = Alignment.Top,
                 ) {
                     Text(
-                        text  = "$${String.format("%.2f", food.price)}",
+                        text     = food.name,
+                        style    = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize   = 17.sp,
+                        ),
+                        color    = OnSurface,
+                        modifier = Modifier.weight(1f, fill = false),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text  = "$${String.format(java.util.Locale.US, "%.2f", food.price)}",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize   = 18.sp,
                         ),
-                        color = OnSurface,
+                        color = Primary,
                     )
+                }
 
-                    // Add button
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier         = Modifier
-                            .clip(RoundedCornerShape(100.dp))
-                            .background(Primary)
-                            .clickable(onClick = onAddClick)
-                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                // Meta info (distance & delivery time)
+                Row(
+                    verticalAlignment     = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text  = "📍 ${food.distanceKm}",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        color = OnSurfaceVariant,
+                    )
+                    Text(
+                        text  = "•",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        color = OnSurfaceVariant,
+                    )
+                    Text(
+                        text  = "⏱️ ${food.deliveryTime}",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                        color = OnSurfaceVariant,
+                    )
+                }
+
+                // Description (2 lines clamped)
+                Text(
+                    text     = food.description,
+                    style    = MaterialTheme.typography.bodySmall.copy(
+                        fontSize   = 13.sp,
+                        lineHeight = 18.sp,
+                    ),
+                    color    = OnSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Spacer(Modifier.height(2.dp))
+
+                // Full-width "Add to Cart" Button
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier         = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(PrimaryLight)
+                        .border(
+                            width = 1.dp,
+                            color = Primary.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(12.dp),
+                        )
+                        .clickable(onClick = onAddClick)
+                        .padding(vertical = 10.dp),
+                ) {
+                    Row(
+                        verticalAlignment     = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
+                        Icon(
+                            imageVector        = Icons.Default.Add,
+                            contentDescription = "Add to Cart",
+                            tint               = Primary,
+                            modifier           = Modifier.size(16.dp),
+                        )
                         Text(
-                            text  = "+ Add",
+                            text  = "Add to Cart",
                             style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 fontSize   = 13.sp,
                             ),
-                            color = Color.White,
+                            color = Primary,
                         )
                     }
                 }

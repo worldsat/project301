@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // ── Brand / Primary ──────────────────────────────────────────────────────────
 val Primary       = Color(0xFFD32F2F)   // Main brand colour, major CTAs
+val PrimaryLight  = Color(0xFFFFEBEE)   // Soft red tint for secondary action cards/buttons
 val OnPrimary     = Color(0xFFFFFFFF)   // Text/Icons on Primary
 
 // ── Secondary / CTA ──────────────────────────────────────────────────────────
