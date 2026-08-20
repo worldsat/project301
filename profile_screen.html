@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh &amp; Friendly - Profile Screen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #D32F2F;
+      --primary-light: #FFEBEE;
+      --primary-gradient: linear-gradient(135deg, #D32F2F 0%, #E57373 100%);
+      --secondary: #FFB300;
+      --secondary-light: rgba(255, 179, 0, 0.15);
+      --secondary-badge: rgba(255, 179, 0, 0.25);
+      --secondary-text: #6D4C00;
+      --surface: #F9F9F9;
+      --surface-card: #FFFFFF;
+      --surface-variant: #F3F3F3;
+      --on-surface: #1C1B1F;
+      --on-surface-variant: #49454F;
+      --outline: #DADADA;
+      --outline-light: rgba(218, 218, 218, 0.5);
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #E2E8F0;
+      color: var(--on-surface);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* Device / Artboard Frame for Figma */
+    .mobile-frame {
+      width: 412px;
+      min-height: 892px;
+      background-color: var(--surface);
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-surface);
+      background-color: var(--surface);
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Top App Bar */
+    .top-bar {
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--surface);
+    }
+
+    .top-bar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--surface-variant);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--on-surface);
+    }
+
+    /* Scrollable Content */
+    .content {
+      flex: 1;
+      padding: 8px 16px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* User Hero Card */
+    .hero-card {
+      background: var(--surface-card);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .user-info-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      flex-shrink: 0;
+    }
+
+    .avatar-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--secondary);
+      border: 2px solid #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #000000;
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-meta {
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* VIP Membership Box */
+    .vip-badge-card {
+      background: var(--secondary-light);
+      border: 1px solid rgba(255, 179, 0, 0.40);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vip-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vip-emoji {
+      font-size: 20px;
+    }
+
+    .vip-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+
+    .vip-subtitle {
+      font-size: 11px;
+      color: var(--on-surface-variant);
+    }
+
+    .active-pill {
+      background: var(--secondary);
+      color: #000000;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Quick Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat-card {
+      background: var(--surface-card);
+      border-radius: 18px;
+      padding: 14px 8px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .stat-icon-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--surface-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 2px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--on-surface-variant);
+    }
+
+    /* Section Headers */
+    .section-header {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--on-surface);
+      padding: 0 4px;
+      margin-top: 4px;
+    }
+
+    /* Profile Section Card */
+    .section-card {
+      background: var(--surface-card);
+      border-radius: 22px;
+      padding: 8px 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Option Row */
+    .option-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .option-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface-variant);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+
+    .option-icon-box.tinted {
+      background: rgba(211, 47, 47, 0.10);
+    }
+
+    .option-text-group {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .option-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    .option-subtitle {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge-pill {
+      background: var(--secondary-badge);
+      color: var(--secondary-text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 100px;
+      margin-right: 8px;
+    }
+
+    .chevron {
+      color: rgba(73, 69, 79, 0.4);
+      flex-shrink: 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--outline-light);
+      margin: 2px 0;
+    }
+
+    /* Switch Component */
+    .switch-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--primary);
+      border-radius: 34px;
+      transition: .3s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .3s;
+      transform: translateX(20px);
+    }
+
+    /* Dietary Chips */
+    .dietary-desc {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      margin: 4px 0 12px 0;
+      line-height: 1.4;
+    }
+
+    .chips-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 6px;
+    }
+
+    .chip {
+      padding: 7px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: var(--surface-variant);
+      color: var(--on-surface);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .chip.selected {
+      background: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      width: 100%;
+      background: rgba(211, 47, 47, 0.08);
+      border: 1.2px solid rgba(211, 47, 47, 0.35);
+      border-radius: 100px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 68px;
+      background: #FFFFFF;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .nav-item.active {
+      color: var(--on-surface);
+      font-weight: 700;
+    }
+
+    .nav-item.active .nav-icon-wrapper {
+      background: var(--secondary);
+      border-radius: 16px;
+      padding: 4px 16px;
+      color: #000000;
+    }
+
+    .nav-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      transition: all 0.2s;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Android Artboard Frame for Figma -->
+  <div class="mobile-frame" id="profile-screen-artboard">
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <!-- Signal -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.25 18.33A9.957 9.957 0 0 1 2 12C2 6.48 6.48 2 12 2s10 4.48 10 10c0 2.45-.88 4.7-2.35 6.44l-.72-.72C20.21 16.14 21 14.17 21 12c0-4.97-4.03-9-9-9z"/>
+          <path d="M12 6c-3.31 0-6 2.69-6 6 0 1.47.53 2.82 1.41 3.87l.71-.71A4.957 4.957 0 0 1 7 12c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.22-.44 2.34-1.18 3.21l.71.71C17.47 14.82 18 13.47 18 12c0-3.31-2.69-6-6-6z"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <!-- Wifi -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4z"/>
+        </svg>
+        <!-- Battery -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Top App Bar -->
+    <div class="top-bar">
+      <h1>Profile</h1>
+      <button class="icon-button" title="Edit Profile" aria-label="Edit Profile">
+        <!-- Edit Pencil Icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scrollable Body Content -->
+    <div class="content">
+
+      <!-- 1. Hero User Card -->
+      <div class="hero-card">
+        <div class="user-info-row">
+          <div class="avatar-wrapper">
+            <div class="avatar-circle">AM</div>
+            <div class="avatar-edit-badge" title="Change photo">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="user-details">
+            <div class="user-name">Alex Morgan</div>
+            <div class="user-meta">alex.morgan@example.com</div>
+            <div class="user-meta">+1 (555) 234-5678</div>
+          </div>
+        </div>
+
+        <!-- VIP Membership -->
+        <div class="vip-badge-card">
+          <div class="vip-left">
+            <span class="vip-emoji">👑</span>
+            <div>
+              <div class="vip-title">Foodie VIP Gold Tier</div>
+              <div class="vip-subtitle">Free delivery on gourmet orders &gt; $20</div>
+            </div>
+          </div>
+          <div class="active-pill">ACTIVE</div>
+        </div>
+      </div>
+
+      <!-- 2. Quick Stats Row -->
+      <div class="stats-row">
+        <!-- Orders -->
+        <div class="stat-card">
+          <div class="stat-icon-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </div>
+          <div class="stat-value">28</div>
+          <div class="stat-label">Total Orders</div>
+        </div>
+        <!-- Favorites -->
+        <div class="stat-card">
+          <div class="stat-icon-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Favorites</div>
+        </div>
+        <!-- Rewards -->
+        <div class="stat-card">
+          <div class="stat-icon-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="5" x2="5" y2="19"></line>
+              <circle cx="6.5" cy="6.5" r="2.5"></circle>
+              <circle cx="17.5" cy="17.5" r="2.5"></circle>
+            </svg>
+          </div>
+          <div class="stat-value">450 pts</div>
+          <div class="stat-label">Rewards</div>
+        </div>
+      </div>
+
+      <!-- 3. Account Settings Section -->
+      <div class="section-header">Account Settings</div>
+      <div class="section-card">
+        <!-- Personal Info -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Personal Information</div>
+            <div class="option-subtitle">Alex Morgan • +1 (555) 234-5678</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Saved Addresses -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Saved Addresses</div>
+            <div class="option-subtitle">Home • 123 Culinary Lane, NY</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Payment Methods -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Payment Methods</div>
+            <div class="option-subtitle">Visa •••• 4242 (Default)</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 4. Preferences & Perks Section -->
+      <div class="section-header">Preferences &amp; Perks</div>
+      <div class="section-card">
+        <!-- Notification Toggle -->
+        <div class="option-row" style="cursor: default;">
+          <div class="option-icon-box tinted">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Order Notifications</div>
+            <div class="option-subtitle">Push alerts enabled</div>
+          </div>
+          <div class="switch-wrapper">
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Vouchers -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Vouchers &amp; Promo Codes</div>
+            <div class="option-subtitle">2 active discounts available</div>
+          </div>
+          <div class="badge-pill">2 Active</div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 5. Dietary Preferences -->
+      <div class="section-header">Dietary Preferences</div>
+      <div class="section-card" style="padding-top: 14px; padding-bottom: 14px;">
+        <div class="dietary-desc">Tailor your dish recommendations and filter menus automatically:</div>
+        <div class="chips-grid">
+          <div class="chip selected">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>🌱 Vegetarian</span>
+          </div>
+          <div class="chip selected">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>✨ Halal</span>
+          </div>
+          <div class="chip">
+            <span>🌾 Gluten-Free</span>
+          </div>
+          <div class="chip">
+            <span>🥛 Dairy-Free</span>
+          </div>
+          <div class="chip">
+            <span>🥜 Nut-Free</span>
+          </div>
+          <div class="chip">
+            <span>🥗 Vegan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Help & Information -->
+      <div class="section-header">Help &amp; Information</div>
+      <div class="section-card">
+        <!-- Help Center -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Help Center &amp; FAQ</div>
+            <div class="option-subtitle">Customer support, contact &amp; guides</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Privacy & Security -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">Privacy &amp; Security</div>
+            <div class="option-subtitle">Data protection and terms of service</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- About -->
+        <div class="option-row">
+          <div class="option-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div class="option-text-group">
+            <div class="option-title">About Fresh &amp; Friendly</div>
+            <div class="option-subtitle">Version 1.0.0 (Vibrant Gourmet Edition)</div>
+          </div>
+          <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 7. Logout Button -->
+      <button class="logout-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sign Out</span>
+      </button>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <!-- Home -->
+      <div class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <span>Home</span>
+      </div>
+
+      <!-- Search -->
+      <div class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </div>
+        <span>Search</span>
+      </div>
+
+      <!-- Orders -->
+      <div class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <span>Orders</span>
+      </div>
+
+      <!-- Profile (Active) -->
+      <div class="nav-item active">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <span>Profile</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

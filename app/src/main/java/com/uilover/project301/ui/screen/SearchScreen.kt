@@ -128,6 +128,7 @@ import com.uilover.project301.ui.theme.Outline
 import com.uilover.project301.ui.theme.Primary
 import com.uilover.project301.ui.theme.Secondary
 import com.uilover.project301.ui.theme.Surface
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.SurfaceVariant
 import com.uilover.project301.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -283,9 +284,11 @@ fun SearchScreen(
             )
         },
         bottomBar = {
-            SearchBottomNav(
-                onHomeClick = onHomeClick,
-                onOrdersClick = onCartClick,
+            AppBottomNav(
+                currentScreen  = Screen.SEARCH,
+                onHomeClick    = onHomeClick,
+                onSearchClick  = { /* Already on Search */ },
+                onOrdersClick  = onCartClick,
                 onProfileClick = onProfileClick,
             )
         },
@@ -532,6 +535,12 @@ private fun SearchTopBar(
                 modifier = Modifier
                     .weight(1f)
                     .height(52.dp)
+                    .shadow(
+                        elevation    = 3.dp,
+                        shape        = RoundedCornerShape(100.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.04f),
+                        spotColor    = Color.Black.copy(alpha = 0.06f),
+                    )
                     .clip(RoundedCornerShape(100.dp))
                     .background(SurfaceVariant)
                     .border(1.dp, Primary.copy(alpha = 0.25f), RoundedCornerShape(100.dp)),
@@ -971,10 +980,10 @@ private fun FoodSearchResultCard(
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 2.dp,
+                elevation = 4.dp,
                 shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.05f),
-                spotColor = Color.Black.copy(alpha = 0.08f),
+                ambientColor = Color.Black.copy(alpha = 0.06f),
+                spotColor = Color.Black.copy(alpha = 0.09f),
             )
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(20.dp),
@@ -1179,10 +1188,10 @@ private fun FoodGridCard(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 2.dp,
+                elevation = 4.dp,
                 shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.05f),
-                spotColor = Color.Black.copy(alpha = 0.08f),
+                ambientColor = Color.Black.copy(alpha = 0.06f),
+                spotColor = Color.Black.copy(alpha = 0.09f),
             )
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(20.dp),
@@ -1584,76 +1593,6 @@ private fun FilterDialog(
         containerColor = Color.White,
         shape = RoundedCornerShape(24.dp),
     )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
-private data class SearchNavItem(
-    val screen: Screen,
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
-
-@Composable
-private fun SearchBottomNav(
-    onHomeClick: () -> Unit,
-    onOrdersClick: () -> Unit,
-    onProfileClick: () -> Unit,
-) {
-    val items = listOf(
-        SearchNavItem(Screen.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home),
-        SearchNavItem(Screen.SEARCH, "Search", Icons.Filled.Search, Icons.Outlined.Search),
-        SearchNavItem(Screen.ORDERS, "Orders", Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart),
-        SearchNavItem(Screen.PROFILE, "Profile", Icons.Filled.Person, Icons.Outlined.Person),
-    )
-
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        modifier = Modifier
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-            ),
-    ) {
-        items.forEach { item ->
-            val isSelected = item.screen == Screen.SEARCH
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = {
-                    when (item.screen) {
-                        Screen.HOME -> onHomeClick()
-                        Screen.ORDERS -> onOrdersClick()
-                        Screen.PROFILE -> onProfileClick()
-                        Screen.SEARCH -> { /* Already on Search */ }
-                    }
-                },
-                icon = {
-                    Icon(
-                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
-                    )
-                },
-                label = {
-                    Text(
-                        text = item.label,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = OnSecondary,
-                    selectedTextColor = Secondary,
-                    indicatorColor = Secondary,
-                    unselectedIconColor = OnSurfaceVariant,
-                    unselectedTextColor = OnSurfaceVariant,
-                ),
-            )
-        }
-    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

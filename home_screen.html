@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh &amp; Friendly - Home Screen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #D32F2F;
+      --primary-light: #FFEBEE;
+      --secondary: #FFB300;
+      --surface: #F9F9F9;
+      --surface-card: #FFFFFF;
+      --surface-variant: #F3F3F3;
+      --on-surface: #1C1B1F;
+      --on-surface-variant: #49454F;
+      --outline: #DADADA;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #E2E8F0;
+      color: var(--on-surface);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .mobile-frame {
+      width: 412px;
+      min-height: 892px;
+      background-color: var(--surface);
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-surface);
+      background-color: var(--surface);
+    }
+    .status-icons { display: flex; align-items: center; gap: 6px; }
+
+    /* Top App Bar */
+    .top-bar {
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--surface);
+    }
+    .top-bar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--on-surface);
+    }
+
+    /* Main Content */
+    .content {
+      flex: 1;
+      padding: 4px 16px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* Search Bar */
+    .search-box {
+      height: 52px;
+      background: var(--surface-variant);
+      border: 1px solid rgba(211, 47, 47, 0.35);
+      border-radius: 100px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .search-box span { font-size: 15px; color: var(--on-surface-variant); }
+
+    /* Categories Horizontal List */
+    .categories-row {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 0 8px 0;
+      scrollbar-width: none;
+    }
+    .categories-row::-webkit-scrollbar { display: none; }
+
+    .category-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 100px;
+      background: var(--surface-card);
+      border: 1px solid var(--outline);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-surface);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .category-chip.active {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: #000000;
+      font-weight: 700;
+    }
+    .category-emoji { font-size: 18px; }
+
+    /* Section Title */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-top: 4px;
+    }
+
+    /* Food Cards */
+    .food-card {
+      background: var(--surface-card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .food-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: #EAEAEA;
+    }
+    .food-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .food-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+    }
+    .rating-badge {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .rating-star { color: #FFD700; }
+
+    .food-info {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .food-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .food-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+    .food-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .food-meta {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .food-desc {
+      font-size: 13px;
+      color: var(--on-surface-variant);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .add-to-cart-btn {
+      margin-top: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid rgba(211, 47, 47, 0.3);
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 68px;
+      background: #FFFFFF;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 12px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .nav-item.active { color: var(--on-surface); font-weight: 700; }
+    .nav-item.active .nav-icon-wrapper {
+      background: var(--secondary);
+      border-radius: 16px;
+      padding: 4px 16px;
+      color: #000000;
+    }
+    .nav-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame" id="home-screen-artboard">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.25 18.33A9.957 9.957 0 0 1 2 12C2 6.48 6.48 2 12 2s10 4.48 10 10c0 2.45-.88 4.7-2.35 6.44l-.72-.72C20.21 16.14 21 14.17 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+      </div>
+    </div>
+
+    <!-- Top App Bar -->
+    <div class="top-bar">
+      <button class="icon-btn" title="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h1>Fresh &amp; Friendly</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Search -->
+      <a href="search_screen.html" class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>What are you craving?</span>
+      </a>
+
+      <!-- Categories -->
+      <div class="categories-row">
+        <div class="category-chip active">
+          <span class="category-emoji">🍕</span>
+          <span>Pizza</span>
+        </div>
+        <div class="category-chip">
+          <span class="category-emoji">🍣</span>
+          <span>Sushi</span>
+        </div>
+        <div class="category-chip">
+          <span class="category-emoji">🍔</span>
+          <span>Burgers</span>
+        </div>
+        <div class="category-chip">
+          <span class="category-emoji">🍰</span>
+          <span>Desserts</span>
+        </div>
+      </div>
+
+      <!-- Section Title -->
+      <div class="section-title">Popular Near You</div>
+
+      <!-- Food 1: Luigi's Woodfired Pizza -->
+      <a href="detail_screen.html" class="food-card">
+        <div class="food-img-wrap">
+          <img class="food-img" src="app/src/main/res/drawable/luigis_woodfired_pizza.jpg" alt="Luigi's Woodfired Pizza" onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'">
+          <div class="rating-badge">
+            <span class="rating-star">★</span> 4.8
+          </div>
+        </div>
+        <div class="food-info">
+          <div class="food-title-row">
+            <div class="food-name">Luigi's Woodfired Pizza</div>
+            <div class="food-price">$18.50</div>
+          </div>
+          <div class="food-meta">
+            <span>📍 0.8 km</span>
+            <span>•</span>
+            <span>⏱️ 10-15 min</span>
+          </div>
+          <div class="food-desc">Artisan dough slow-fermented for 48 hours, San Marzano tomato sauce, fresh mozzarella and basil.</div>
+          <button class="add-to-cart-btn" onclick="event.preventDefault(); window.location.href='cart_screen.html';">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </a>
+
+      <!-- Food 2: The Smash Grill -->
+      <a href="detail_screen.html" class="food-card">
+        <div class="food-img-wrap">
+          <img class="food-img" src="app/src/main/res/drawable/the_smash_grill.jpg" alt="The Smash Grill" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80'">
+          <div class="food-badge">BEST SELLER</div>
+          <div class="rating-badge">
+            <span class="rating-star">★</span> 4.9
+          </div>
+        </div>
+        <div class="food-info">
+          <div class="food-title-row">
+            <div class="food-name">The Smash Grill</div>
+            <div class="food-price">$14.00</div>
+          </div>
+          <div class="food-meta">
+            <span>📍 1.5 km</span>
+            <span>•</span>
+            <span>⏱️ 15-25 min</span>
+          </div>
+          <div class="food-desc">Two Japanese Wagyu beef patties smashed on a flat-top, double aged cheddar, pickles &amp; secret sauce.</div>
+          <button class="add-to-cart-btn" onclick="event.preventDefault(); window.location.href='cart_screen.html';">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </a>
+
+      <!-- Food 3: Sakura Sushi -->
+      <a href="detail_screen.html" class="food-card">
+        <div class="food-img-wrap">
+          <img class="food-img" src="app/src/main/res/drawable/sakura_sushi.jpg" alt="Sakura Sushi" onerror="this.src='https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop&q=80'">
+          <div class="rating-badge">
+            <span class="rating-star">★</span> 4.6
+          </div>
+        </div>
+        <div class="food-info">
+          <div class="food-title-row">
+            <div class="food-name">Sakura Sushi</div>
+            <div class="food-price">$24.00</div>
+          </div>
+          <div class="food-meta">
+            <span>📍 2.1 km</span>
+            <span>•</span>
+            <span>⏱️ 20-30 min</span>
+          </div>
+          <div class="food-desc">Omakase-inspired 12-piece collection with Norwegian salmon, bluefin tuna &amp; hamachi yellowtail.</div>
+          <button class="add-to-cart-btn" onclick="event.preventDefault(); window.location.href='cart_screen.html';">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add to Cart</span>
+          </button>
+        </div>
+      </a>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <a href="home_screen.html" class="nav-item active">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <span>Home</span>
+      </a>
+      <a href="search_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <span>Search</span>
+      </a>
+      <a href="cart_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <span>Orders</span>
+      </a>
+      <a href="profile_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

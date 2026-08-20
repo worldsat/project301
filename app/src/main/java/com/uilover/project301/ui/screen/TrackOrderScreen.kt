@@ -37,11 +37,15 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +67,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
+import com.uilover.project301.data.Screen
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
 import com.uilover.project301.ui.theme.Outline
@@ -131,9 +137,11 @@ fun TrackOrderScreen(
     Scaffold(
         containerColor = Surface,
         bottomBar      = {
-            TrackOrderBottomNav(
+            AppBottomNav(
+                currentScreen  = Screen.ORDERS,
                 onHomeClick    = onHomeClick,
                 onSearchClick  = onSearchClick,
+                onOrdersClick  = { /* already on orders */ },
                 onProfileClick = onProfileClick,
             )
         },
@@ -178,31 +186,36 @@ fun TrackOrderScreen(
 // App Bar  ("Fresh & Friendly" title + hamburger)
 // ─────────────────────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TrackOrderAppBar() {
-    Row(
-        modifier          = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector        = Icons.Outlined.Menu,
-            contentDescription = "Menu",
-            tint               = OnSurface,
-            modifier           = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text  = "Fresh & Friendly",
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize   = 22.sp,
-            ),
-            color = Primary,
-        )
-    }
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text  = "Fresh & Friendly",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize   = 22.sp,
+                ),
+                color = Primary,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector        = Icons.Outlined.Menu,
+                    contentDescription = "Menu",
+                    tint               = OnSurface,
+                )
+            }
+        },
+        actions = {
+            Spacer(modifier = Modifier.width(48.dp))
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White,
+        ),
+    )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -526,112 +539,6 @@ private fun DriverCard(modifier: Modifier = Modifier) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
-private data class TrackNavItem(
-    val icon: ImageVector,
-    val label: String,
-    val isActive: Boolean,
-)
-
-@Composable
-private fun TrackOrderBottomNav(
-    onHomeClick: () -> Unit,
-    onSearchClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-) {
-    val items = listOf(
-        TrackNavItem(Icons.Filled.Home,          "Home",    false),
-        TrackNavItem(Icons.Filled.Search,        "Search",  false),
-        TrackNavItem(Icons.Outlined.ReceiptLong, "Orders",  true),
-        TrackNavItem(Icons.Outlined.Person,      "Profile", false),
-    )
-
-    Row(
-        modifier              = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation    = 12.dp,
-                shape        = RoundedCornerShape(0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-            )
-            .background(Color.White)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment     = Alignment.CenterVertically,
-    ) {
-        items.forEachIndexed { index, item ->
-            NavBarItem(
-                item    = item,
-                onClick = {
-                    when (index) {
-                        0 -> onHomeClick()
-                        1 -> onSearchClick()
-                        3 -> onProfileClick()
-                    }
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun NavBarItem(item: TrackNavItem, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier            = Modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication        = null,
-                onClick           = onClick,
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-    ) {
-        if (item.isActive) {
-            // Active pill with yellow bg
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier         = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Secondary)
-                    .padding(horizontal = 18.dp, vertical = 8.dp),
-            ) {
-                Row(
-                    verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Icon(
-                        imageVector        = item.icon,
-                        contentDescription = item.label,
-                        tint               = Color.White,
-                        modifier           = Modifier.size(20.dp),
-                    )
-                    Text(
-                        text  = item.label,
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White,
-                    )
-                }
-            }
-        } else {
-            Icon(
-                imageVector        = item.icon,
-                contentDescription = item.label,
-                tint               = OnSurfaceVariant,
-                modifier           = Modifier.size(24.dp),
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text  = item.label,
-                style = MaterialTheme.typography.labelSmall,
-                color = OnSurfaceVariant,
-            )
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Shared card container
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -641,10 +548,10 @@ private fun TrackCard(modifier: Modifier = Modifier, content: @Composable () -> 
         modifier = modifier
             .fillMaxWidth()
             .shadow(
-                elevation    = 2.dp,
+                elevation    = 4.dp,
                 shape        = RoundedCornerShape(20.dp),
                 ambientColor = Color.Black.copy(alpha = 0.06f),
-                spotColor    = Color.Black.copy(alpha = 0.08f),
+                spotColor    = Color.Black.copy(alpha = 0.09f),
             )
             .background(Color.White, RoundedCornerShape(20.dp))
             .padding(horizontal = 18.dp, vertical = 18.dp),

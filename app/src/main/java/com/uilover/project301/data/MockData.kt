@@ -17,7 +17,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 1,
         name         = "Luigi's Woodfired Pizza",
-        description  = "Authentic Neapolitan style pizza with fresh mozzarella, San Marzano tomatoes, and basil.",
+        description  = "Crafted following centuries-old Neapolitan traditions, our artisan dough is slow-fermented for 48 hours to achieve a blistered, airy crust. Topped with sweet San Marzano tomato sauce, hand-torn fior di latte mozzarella, fresh fragrant basil leaves, and a generous drizzle of extra virgin olive oil, then baked to blistered perfection in our 900°F oak wood-fired oven.",
         price        = 18.50,
         rating       = 4.8,
         image        = ImageSource.Local(R.drawable.luigis_woodfired_pizza),
@@ -31,7 +31,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 2,
         name         = "The Smash Grill",
-        description  = "Double wagyu beef patties, house-made pickles, caramelized onions, and secret sauce.",
+        description  = "Two premium Japanese Wagyu beef patties expertly smashed on a smoking hot chrome flat-top for ultra-crispy, caramelized edges while staying succulent and juicy inside. Layered with double melted aged cheddar, slow-simmered balsamic caramelized onions, crunchy house-cured dill pickles, and our signature smoked paprika secret sauce on a butter-toasted brioche bun.",
         price        = 14.00,
         rating       = 4.9,
         image        = ImageSource.Local(R.drawable.the_smash_grill),
@@ -45,7 +45,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 3,
         name         = "Sakura Sushi",
-        description  = "Premium 12-piece chef's selection featuring fresh salmon, tuna, and yellowtail nigiri.",
+        description  = "An exquisite omakase-inspired 12-piece tasting collection carefully curated by our master sushi chef each morning. Features air-flown Norwegian Atlantic salmon, bluefin tuna akami, tender hamachi yellowtail nigiri, and delicate maki rolls. Served atop seasoned koshihikari sushi rice with artisanal aged soy sauce, freshly grated real Shizuoka wasabi, and pickled young ginger.",
         price        = 24.00,
         rating       = 4.6,
         image        = ImageSource.Local(R.drawable.sakura_sushi),
@@ -59,7 +59,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 4,
         name         = "The Gourmet Royale",
-        description  = "Our signature double-patty smash burger featuring 100% Angus beef, melty American cheese, crisp iceberg lettuce, thick-cut heritage tomatoes, and our secret house sauce, all served on a perfectly toasted brioche bun.",
+        description  = "Our legendary signature masterpiece crafted with two 100% grass-fed Angus beef patties, seared to smoky perfection. Layered with rich melted sharp American cheddar, crisp organic hydroponic iceberg lettuce, sun-ripened thick-cut heritage beefsteak tomatoes, sweet red onion rings, and smothered in our velvety house special relish sauce between two golden, buttery brioche buns.",
         price        = 14.99,
         rating       = 4.8,
         image        = ImageSource.Local(R.drawable.the_gourmet_royale),
@@ -73,7 +73,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 5,
         name         = "Classic Artisan Burger",
-        description  = "House-ground beef blend with crisp iceberg lettuce, tomato, and our signature burger sauce.",
+        description  = "A timeless culinary comfort favorite featuring a 6oz custom prime beef brisket and chuck blend patty, char-grilled over open flames to juicy perfection. Accompanied by crisp farm-fresh iceberg lettuce, vine-ripened tomatoes, melted mild cheddar, sweet pickled cucumbers, and our creamy herb-infused artisan burger spread on a warm toasted sesame seed potato bun.",
         price        = 13.00,
         rating       = 4.5,
         image        = ImageSource.Local(R.drawable.classic_artisan_burger),
@@ -87,7 +87,7 @@ val MockFoodItems = listOf(
     FoodItem(
         id           = 6,
         name         = "Crispy French Fries",
-        description  = "Golden double-fried fries seasoned with sea salt and rosemary, served with aioli dip.",
+        description  = "Hand-cut from select premium Russet potatoes and double-fried in pure peanut oil for an unbeatable shatteringly crisp exterior and fluffy, cloud-like interior. Tossed warm in coarse Mediterranean sea salt, freshly chopped garden rosemary, and cracked black pepper. Served alongside a ramekin of house-made roasted garlic and lemon herb aioli dip.",
         price        = 6.50,
         rating       = 4.4,
         image        = ImageSource.Local(R.drawable.crispy_french_fries),

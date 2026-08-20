@@ -1,4 +1,4 @@
-﻿package com.uilover.project301.ui.screen
+package com.uilover.project301.ui.screen
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -388,15 +388,21 @@ private fun PaymentOptionRow(
     label: String,
     sublabel: String?,
 ) {
-    val borderColor = if (isSelected) Primary else Outline
-    val bgColor     = if (isSelected) Primary.copy(alpha = 0.05f) else Color.Transparent
+    val borderColor = if (isSelected) Primary else Outline.copy(alpha = 0.6f)
+    val bgColor     = if (isSelected) Primary.copy(alpha = 0.06f) else Color.White
 
     Row(
         modifier          = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
+            .shadow(
+                elevation    = if (isSelected) 3.dp else 1.5.dp,
+                shape        = RoundedCornerShape(14.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+                spotColor    = Color.Black.copy(alpha = 0.06f),
+            )
+            .background(bgColor, RoundedCornerShape(14.dp))
             .border(1.dp, borderColor, RoundedCornerShape(14.dp))
-            .background(bgColor)
+            .clip(RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication        = null,
@@ -687,6 +693,12 @@ private fun PlaceOrderBar(total: Double, onOrderPlaced: () -> Unit) {
 
         Row(
             modifier          = Modifier
+                .shadow(
+                    elevation    = 6.dp,
+                    shape        = RoundedCornerShape(100.dp),
+                    ambientColor = Primary.copy(alpha = 0.25f),
+                    spotColor    = Primary.copy(alpha = 0.35f),
+                )
                 .clip(RoundedCornerShape(100.dp))
                 .background(Primary)
                 .clickable(
@@ -727,7 +739,7 @@ private fun SectionCard(content: @Composable () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .shadow(
-                elevation    = 2.dp,
+                elevation    = 4.dp,
                 shape        = RoundedCornerShape(20.dp),
                 ambientColor = Color.Black.copy(alpha = 0.06f),
                 spotColor    = Color.Black.copy(alpha = 0.08f),

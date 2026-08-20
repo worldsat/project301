@@ -76,6 +76,7 @@ import com.uilover.project301.data.Category
 import com.uilover.project301.data.FoodItem
 import com.uilover.project301.data.ImageSource
 import com.uilover.project301.data.Screen
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSecondary
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
@@ -106,12 +107,12 @@ fun HomeScreen(
             HomeTopBar()
         },
         bottomBar = {
-            HomeBottomNav(
-                currentScreen    = uiState.currentScreen,
-                onScreenSelected = viewModel::onScreenSelected,
-                onSearchClick    = onSearchClick,
-                onCartClick      = onCartClick,
-                onProfileClick   = onProfileClick,
+            AppBottomNav(
+                currentScreen  = uiState.currentScreen,
+                onHomeClick    = { viewModel.onScreenSelected(Screen.HOME) },
+                onSearchClick  = onSearchClick,
+                onOrdersClick  = onCartClick,
+                onProfileClick = onProfileClick,
             )
         },
     ) { innerPadding ->
@@ -223,9 +224,16 @@ private fun SearchBar(
         modifier      = modifier
             .fillMaxWidth()
             .height(52.dp)
+            .shadow(
+                elevation    = 3.dp,
+                shape        = RoundedCornerShape(100.dp),
+                ambientColor = Color.Black.copy(alpha = 0.05f),
+                spotColor    = Color.Black.copy(alpha = 0.08f),
+            )
+            .background(SurfaceVariant, RoundedCornerShape(100.dp))
             .border(
                 width = 1.dp,
-                color = Primary.copy(alpha = 0.45f),
+                color = Primary.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(100.dp),
             )
             .clickable { onSearchClick() },
@@ -328,6 +336,12 @@ private fun CategoryChip(
             contentAlignment = Alignment.Center,
             modifier         = Modifier
                 .size(62.dp)
+                .shadow(
+                    elevation    = if (isSelected) 4.dp else 2.dp,
+                    shape        = CircleShape,
+                    ambientColor = Color.Black.copy(alpha = 0.06f),
+                    spotColor    = Color.Black.copy(alpha = 0.08f),
+                )
                 .clip(CircleShape)
                 .background(bgColor),
         ) {
@@ -365,10 +379,10 @@ private fun FoodCard(
         modifier  = modifier
             .fillMaxWidth()
             .shadow(
-                elevation            = 2.dp,
+                elevation            = 5.dp,
                 shape                = RoundedCornerShape(24.dp),
-                ambientColor         = Color.Black.copy(alpha = 0.06f),
-                spotColor            = Color.Black.copy(alpha = 0.10f),
+                ambientColor         = Color.Black.copy(alpha = 0.08f),
+                spotColor            = Color.Black.copy(alpha = 0.12f),
             )
             .clickable(onClick = onCardClick),
         shape     = RoundedCornerShape(24.dp),
@@ -504,78 +518,6 @@ private fun FoodCard(
                     }
                 }
             }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
-private data class HomeNavItem(
-    val screen: Screen,
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
-
-@Composable
-private fun HomeBottomNav(
-    currentScreen: Screen,
-    onScreenSelected: (Screen) -> Unit,
-    onSearchClick: () -> Unit = {},
-    onCartClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-) {
-    val items = listOf(
-        HomeNavItem(Screen.HOME,    "Home",    Icons.Filled.Home,         Icons.Outlined.Home),
-        HomeNavItem(Screen.SEARCH,  "Search",  Icons.Filled.Search,       Icons.Outlined.Search),
-        HomeNavItem(Screen.ORDERS,  "Orders",  Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart),
-        HomeNavItem(Screen.PROFILE, "Profile", Icons.Filled.Person,       Icons.Outlined.Person),
-    )
-
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        modifier       = Modifier
-            .shadow(
-                elevation    = 8.dp,
-                shape        = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-            ),
-    ) {
-        items.forEach { item ->
-            val isSelected = currentScreen == item.screen
-            NavigationBarItem(
-                selected = isSelected,
-                onClick  = {
-                    when (item.screen) {
-                        Screen.SEARCH -> onSearchClick()
-                        Screen.ORDERS -> onCartClick()
-                        Screen.PROFILE -> onProfileClick()
-                        else -> onScreenSelected(item.screen)
-                    }
-                },
-                icon     = {
-                    Icon(
-                        imageVector        = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
-                    )
-                },
-                label    = {
-                    Text(
-                        text  = item.label,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                },
-                colors   = NavigationBarItemDefaults.colors(
-                    selectedIconColor       = OnSecondary,
-                    selectedTextColor       = Secondary,
-                    indicatorColor          = Secondary,
-                    unselectedIconColor     = OnSurfaceVariant,
-                    unselectedTextColor     = OnSurfaceVariant,
-                ),
-            )
         }
     }
 }

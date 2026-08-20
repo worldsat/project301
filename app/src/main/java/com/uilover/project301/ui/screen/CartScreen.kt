@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,6 +79,7 @@ import coil3.compose.AsyncImage
 import com.uilover.project301.data.CartItem
 import com.uilover.project301.data.ImageSource
 import com.uilover.project301.data.Screen
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSecondary
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
@@ -94,6 +96,7 @@ import com.uilover.project301.viewmodel.HomeViewModel
 
 private const val DELIVERY_FEE = 2.99
 private const val TAX_RATE     = 0.10
+private val CartBackground     = Color(0xFFF4F5F7)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Cart Screen Entry Point
@@ -117,7 +120,7 @@ fun CartScreen(
     val total    = subtotal + DELIVERY_FEE + taxes
 
     Scaffold(
-        containerColor = Surface,
+        containerColor = CartBackground,
         topBar = {
             CartTopBar(
                 itemCount = cartItems.sumOf { it.quantity },
@@ -137,9 +140,11 @@ fun CartScreen(
                 ) {
                     CheckoutBar(total = total, onCheckout = onCheckout)
                 }
-                CartBottomNav(
+                AppBottomNav(
+                    currentScreen  = Screen.ORDERS,
                     onHomeClick    = onHomeClick,
                     onSearchClick  = onSearchClick,
+                    onOrdersClick  = { /* Already on Orders */ },
                     onProfileClick = onProfileClick,
                 )
             }
@@ -153,32 +158,24 @@ fun CartScreen(
                 modifier       = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(bottom = 24.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // ── Cart item rows ────────────────────────────────────────
-                itemsIndexed(
+                // ── Cart item cards ───────────────────────────────────────
+                items(
                     items = cartItems,
-                    key   = { _, item -> item.foodItem.id },
-                ) { index, item ->
+                    key   = { it.foodItem.id },
+                ) { item ->
                     CartItemRow(
                         item    = item,
                         onPlus  = { viewModel.addToCart(item.foodItem) },
                         onMinus = { viewModel.removeFromCart(item.foodItem.id) },
                     )
-                    if (index < cartItems.lastIndex) {
-                        HorizontalDivider(
-                            color     = Outline.copy(alpha = 0.5f),
-                            thickness = 0.8.dp,
-                            modifier  = Modifier.padding(horizontal = 16.dp),
-                        )
-                    }
                 }
 
                 // ── Promo code ────────────────────────────────────────────
                 item {
-                    Spacer(Modifier.height(8.dp))
                     PromoCodeRow()
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 // ── Order summary ─────────────────────────────────────────
@@ -211,7 +208,7 @@ private fun CartTopBar(
                 text  = "Your Cart",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize   = 22.sp,
+                    fontSize   = 20.sp,
                 ),
                 color = OnSurface,
             )
@@ -227,28 +224,25 @@ private fun CartTopBar(
         },
         actions = {
             if (itemCount > 0) {
-                Box(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .background(SurfaceVariant, RoundedCornerShape(100.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                ) {
-                    Text(
-                        text  = "$itemCount ${if (itemCount == 1) "Item" else "Items"}",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = OnSurfaceVariant,
-                    )
-                }
+                Text(
+                    text     = "$itemCount ${if (itemCount == 1) "Item" else "Items"}",
+                    style    = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize   = 13.sp,
+                        fontWeight = FontWeight.Normal,
+                    ),
+                    color    = OnSurfaceVariant,
+                    modifier = Modifier.padding(end = 16.dp),
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Surface,
+            containerColor = CartBackground,
         ),
     )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cart Item Row
+// Cart Item Card
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -262,15 +256,21 @@ private fun CartItemRow(
     Row(
         modifier          = Modifier
             .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .shadow(
+                elevation    = 4.dp,
+                shape        = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.06f),
+                spotColor    = Color.Black.copy(alpha = 0.08f),
+            )
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Thumbnail
         Box(
             modifier = Modifier
                 .size(76.dp)
-                .clip(RoundedCornerShape(16.dp)),
+                .clip(RoundedCornerShape(14.dp)),
         ) {
             when (food.image) {
                 is ImageSource.Local -> Image(
@@ -294,22 +294,27 @@ private fun CartItemRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text     = food.name,
-                style    = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                style    = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize   = 15.sp,
+                ),
                 color    = OnSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(Modifier.height(2.dp))
-            // Use the first ingredient or a truncated description as subtitle
-            val subtitle = food.ingredients.firstOrNull() ?: food.description.take(28)
+            Spacer(Modifier.height(3.dp))
+            val subtitle = food.ingredients.take(2).joinToString(", ")
+                .ifEmpty { food.description.take(28) }
             Text(
                 text     = subtitle,
-                style    = MaterialTheme.typography.bodySmall,
-                color    = OnSurfaceVariant,
+                style    = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 12.sp,
+                ),
+                color    = OnSurfaceVariant.copy(alpha = 0.8f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 text  = "$${String.format("%.2f", food.price)}",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -320,9 +325,9 @@ private fun CartItemRow(
             )
         }
 
-        Spacer(Modifier.width(10.dp))
+        Spacer(Modifier.width(8.dp))
 
-        // Quantity stepper
+        // Quantity stepper capsule [ − qty + ]
         CartQuantityStepper(
             quantity = item.quantity,
             onMinus  = onMinus,
@@ -332,7 +337,7 @@ private fun CartItemRow(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Inline Quantity Stepper  [ − qty + ]
+// Pill Stepper [ − qty + ]
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -342,61 +347,69 @@ private fun CartQuantityStepper(
     onPlus: () -> Unit,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier          = Modifier
-            .border(1.dp, Outline, RoundedCornerShape(100.dp))
-            .padding(horizontal = 4.dp, vertical = 4.dp),
+        verticalAlignment     = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier              = Modifier
+            .width(96.dp)
+            .height(36.dp)
+            .background(Color(0xFFF2F4F7), RoundedCornerShape(100.dp))
+            .padding(horizontal = 4.dp),
     ) {
-        CartStepButton(label = "−", onClick = onMinus, enabled = quantity > 0)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier         = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication        = null,
+                    onClick           = onMinus,
+                ),
+        ) {
+            Text(
+                text  = "−",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize   = 16.sp,
+                ),
+                color = Primary,
+            )
+        }
 
         Text(
             text     = quantity.toString(),
-            style    = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            color    = OnSurface,
-            modifier = Modifier.padding(horizontal = 12.dp),
-        )
-
-        CartStepButton(label = "+", onClick = onPlus, enabled = true)
-    }
-}
-
-@Composable
-private fun CartStepButton(
-    label: String,
-    onClick: () -> Unit,
-    enabled: Boolean,
-) {
-    val scale by animateFloatAsState(
-        targetValue   = if (enabled) 1f else 0.85f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label         = "step_scale",
-    )
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier         = Modifier
-            .size(30.dp)
-            .clip(CircleShape)
-            .background(SurfaceVariant)
-            .clickable(
-                enabled           = enabled,
-                interactionSource = remember { MutableInteractionSource() },
-                indication        = null,
-                onClick           = onClick,
-            ),
-    ) {
-        Text(
-            text  = label,
-            style = MaterialTheme.typography.titleMedium.copy(
+            style    = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
-                fontSize   = 16.sp,
+                fontSize   = 14.sp,
             ),
-            color = OnSurface.copy(alpha = if (enabled) 1f else 0.35f),
+            color    = OnSurface,
         )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier         = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication        = null,
+                    onClick           = onPlus,
+                ),
+        ) {
+            Text(
+                text  = "+",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize   = 16.sp,
+                ),
+                color = Primary,
+            )
+        }
     }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Promo Code Row
+// Promo Code Card
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
@@ -407,35 +420,39 @@ private fun PromoCodeRow() {
         modifier          = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation    = 1.dp,
-                shape        = RoundedCornerShape(0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.04f),
+                elevation    = 4.dp,
+                shape        = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.06f),
+                spotColor    = Color.Black.copy(alpha = 0.08f),
             )
-            .background(Color.White)
+            .background(Color.White, RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector        = Icons.Outlined.LocalOffer,
             contentDescription = "Promo",
-            tint               = OnSurfaceVariant,
+            tint               = Primary,
             modifier           = Modifier.size(20.dp),
         )
-        Spacer(Modifier.width(10.dp))
+        Spacer(Modifier.width(12.dp))
 
         BasicTextField(
             value         = promoCode,
             onValueChange = { promoCode = it },
             modifier      = Modifier.weight(1f),
             singleLine    = true,
-            textStyle     = MaterialTheme.typography.bodyMedium.copy(color = OnSurface),
+            textStyle     = MaterialTheme.typography.bodyMedium.copy(
+                color    = OnSurface,
+                fontSize = 14.sp,
+            ),
             cursorBrush   = SolidColor(Primary),
             decorationBox = { inner ->
                 if (promoCode.isEmpty()) {
                     Text(
                         text  = "Add Promo Code",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = OnSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                        color = OnSurfaceVariant.copy(alpha = 0.7f),
                     )
                 }
                 inner()
@@ -444,7 +461,10 @@ private fun PromoCodeRow() {
 
         Text(
             text     = "Apply",
-            style    = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            style    = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize   = 14.sp,
+            ),
             color    = Primary,
             modifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -468,15 +488,14 @@ private fun OrderSummaryCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .shadow(
-                elevation    = 2.dp,
-                shape        = RoundedCornerShape(24.dp),
+                elevation    = 4.dp,
+                shape        = RoundedCornerShape(16.dp),
                 ambientColor = Color.Black.copy(alpha = 0.06f),
                 spotColor    = Color.Black.copy(alpha = 0.08f),
             )
-            .background(Color.White, RoundedCornerShape(24.dp))
-            .padding(horizontal = 20.dp, vertical = 20.dp),
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(horizontal = 16.dp, vertical = 18.dp),
     ) {
         Text(
             text  = "Order Summary",
@@ -555,6 +574,12 @@ private fun CheckoutBar(total: Double, onCheckout: () -> Unit) {
         Row(
             modifier              = Modifier
                 .weight(1f)
+                .shadow(
+                    elevation    = 6.dp,
+                    shape        = RoundedCornerShape(100.dp),
+                    ambientColor = Primary.copy(alpha = 0.25f),
+                    spotColor    = Primary.copy(alpha = 0.35f),
+                )
                 .clip(RoundedCornerShape(100.dp))
                 .background(Primary)
                 .clickable(
@@ -593,77 +618,6 @@ private fun CheckoutBar(total: Double, onCheckout: () -> Unit) {
                     color = Color.White,
                 )
             }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
-private data class CartNavItem(
-    val screen: Screen,
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
-
-@Composable
-private fun CartBottomNav(
-    onHomeClick: () -> Unit,
-    onSearchClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
-) {
-    val items = listOf(
-        CartNavItem(Screen.HOME,    "Home",    Icons.Filled.Home,         Icons.Outlined.Home),
-        CartNavItem(Screen.SEARCH,  "Search",  Icons.Filled.Search,       Icons.Outlined.Search),
-        CartNavItem(Screen.ORDERS,  "Orders",  Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart),
-        CartNavItem(Screen.PROFILE, "Profile", Icons.Filled.Person,       Icons.Outlined.Person),
-    )
-
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        modifier       = modifier
-            .shadow(
-                elevation    = 8.dp,
-                shape        = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-            ),
-    ) {
-        items.forEach { item ->
-            val isSelected = item.screen == Screen.ORDERS
-            NavigationBarItem(
-                selected = isSelected,
-                onClick  = {
-                    when (item.screen) {
-                        Screen.HOME -> onHomeClick()
-                        Screen.SEARCH -> onSearchClick()
-                        Screen.PROFILE -> onProfileClick()
-                        else -> {}
-                    }
-                },
-                icon     = {
-                    Icon(
-                        imageVector        = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
-                    )
-                },
-                label    = {
-                    Text(
-                        text  = item.label,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                },
-                colors   = NavigationBarItemDefaults.colors(
-                    selectedIconColor   = OnSecondary,
-                    selectedTextColor   = Secondary,
-                    indicatorColor      = Secondary,
-                    unselectedIconColor = OnSurfaceVariant,
-                    unselectedTextColor = OnSurfaceVariant,
-                ),
-            )
         }
     }
 }

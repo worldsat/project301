@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresh &amp; Friendly - Search Dishes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #D32F2F;
+      --primary-light: #FFEBEE;
+      --secondary: #FFB300;
+      --surface: #F9F9F9;
+      --surface-card: #FFFFFF;
+      --surface-variant: #F3F3F3;
+      --on-surface: #1C1B1F;
+      --on-surface-variant: #49454F;
+      --outline: #DADADA;
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: #E2E8F0;
+      color: var(--on-surface);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .mobile-frame {
+      width: 412px;
+      min-height: 892px;
+      background-color: var(--surface);
+      border-radius: 36px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--on-surface);
+      background-color: var(--surface);
+    }
+    .status-icons { display: flex; align-items: center; gap: 6px; }
+
+    /* Search Bar Header */
+    .search-header {
+      padding: 8px 16px 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--surface);
+    }
+    .search-input-wrap {
+      flex: 1;
+      height: 48px;
+      background: var(--surface-card);
+      border: 1.5px solid var(--primary);
+      border-radius: 100px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 10px rgba(211, 47, 47, 0.1);
+    }
+    .search-input {
+      flex: 1;
+      border: none;
+      background: none;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--on-surface);
+      outline: none;
+    }
+    .filter-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--surface-card);
+      border: 1px solid var(--outline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--on-surface);
+      position: relative;
+    }
+    .filter-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #FFF;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 4px 16px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    /* Quick Filter Chips */
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-chips-row::-webkit-scrollbar { display: none; }
+    .f-chip {
+      padding: 8px 14px;
+      border-radius: 100px;
+      background: var(--surface-card);
+      border: 1px solid var(--outline);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--on-surface);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .f-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+    }
+
+    /* Trending Tags */
+    .tags-section {
+      background: var(--surface-card);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tags-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag-item {
+      background: var(--surface-variant);
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--on-surface);
+      cursor: pointer;
+    }
+
+    /* Results Header */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .results-count {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface-variant);
+      padding: 4px;
+      border-radius: 8px;
+    }
+    .toggle-icon {
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--on-surface-variant);
+    }
+    .toggle-icon.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Search Result Item (List View) */
+    .result-card {
+      background: var(--surface-card);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .result-img {
+      width: 76px;
+      height: 76px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #EEE;
+    }
+    .result-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .result-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result-desc {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .result-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .result-rating {
+      font-size: 12px;
+      font-weight: 700;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      height: 64px;
+      background: #FFFFFF;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 12px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .nav-item.active { color: var(--on-surface); font-weight: 700; }
+    .nav-item.active .nav-icon-wrapper {
+      background: var(--secondary);
+      border-radius: 16px;
+      padding: 4px 16px;
+      color: #000000;
+    }
+    .nav-icon-wrapper { display: flex; align-items: center; justify-content: center; padding: 4px 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame" id="search-screen-artboard">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.25 18.33A9.957 9.957 0 0 1 2 12C2 6.48 6.48 2 12 2s10 4.48 10 10c0 2.45-.88 4.7-2.35 6.44l-.72-.72C20.21 16.14 21 14.17 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+      </div>
+    </div>
+
+    <!-- Search Bar Header -->
+    <div class="search-header">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" value="Wagyu" placeholder="Search foods, cuisines, tags...">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" style="cursor: pointer;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <button class="filter-btn" title="Filter options">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <div class="filter-badge">2</div>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Quick Filter Chips -->
+      <div class="filter-chips-row">
+        <div class="f-chip active">All</div>
+        <div class="f-chip">★ 4.7+</div>
+        <div class="f-chip">Under $15</div>
+        <div class="f-chip">Fast Delivery</div>
+        <div class="f-chip">Burgers</div>
+        <div class="f-chip">Pizza</div>
+      </div>
+
+      <!-- Trending Search Tags -->
+      <div class="tags-section">
+        <div class="tags-title">Trending Searches</div>
+        <div class="tags-cloud">
+          <div class="tag-item">🔥 Wagyu Smash</div>
+          <div class="tag-item">🍕 Neapolitan Pizza</div>
+          <div class="tag-item">🍣 Salmon Nigiri</div>
+          <div class="tag-item">🍟 Rosemary Fries</div>
+          <div class="tag-item">🌱 Vegan</div>
+        </div>
+      </div>
+
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-count">Results (4 dishes)</div>
+        <div class="view-toggle">
+          <div class="toggle-icon active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </div>
+          <div class="toggle-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result 1 -->
+      <a href="detail_screen.html" class="result-card">
+        <img class="result-img" src="app/src/main/res/drawable/the_smash_grill.jpg" alt="The Smash Grill" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80'">
+        <div class="result-info">
+          <div class="result-title">The Smash Grill</div>
+          <div class="result-desc">Two Japanese Wagyu patties, aged cheddar &amp; pickles</div>
+          <div class="result-bottom">
+            <span class="result-price">$14.00</span>
+            <span class="result-rating">★ 4.9 (1.5 km)</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Result 2 -->
+      <a href="detail_screen.html" class="result-card">
+        <img class="result-img" src="app/src/main/res/drawable/the_gourmet_royale.jpg" alt="The Gourmet Royale" onerror="this.src='https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80'">
+        <div class="result-info">
+          <div class="result-title">The Gourmet Royale</div>
+          <div class="result-desc">Grass-fed Angus beef with house special relish</div>
+          <div class="result-bottom">
+            <span class="result-price">$14.99</span>
+            <span class="result-rating">★ 4.8 (1.2 km)</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Result 3 -->
+      <a href="detail_screen.html" class="result-card">
+        <img class="result-img" src="app/src/main/res/drawable/classic_artisan_burger.jpg" alt="Classic Artisan Burger" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80'">
+        <div class="result-info">
+          <div class="result-title">Classic Artisan Burger</div>
+          <div class="result-desc">Prime beef brisket patty, tomato, crisp lettuce</div>
+          <div class="result-bottom">
+            <span class="result-price">$13.00</span>
+            <span class="result-rating">★ 4.5 (0.9 km)</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Result 4 -->
+      <a href="detail_screen.html" class="result-card">
+        <img class="result-img" src="app/src/main/res/drawable/luigis_woodfired_pizza.jpg" alt="Luigi's Woodfired Pizza" onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'">
+        <div class="result-info">
+          <div class="result-title">Luigi's Woodfired Pizza</div>
+          <div class="result-desc">San Marzano tomatoes, fior di latte &amp; fresh basil</div>
+          <div class="result-bottom">
+            <span class="result-price">$18.50</span>
+            <span class="result-rating">★ 4.8 (0.8 km)</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <a href="home_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <span>Home</span>
+      </a>
+      <a href="search_screen.html" class="nav-item active">
+        <div class="nav-icon-wrapper"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <span>Search</span>
+      </a>
+      <a href="cart_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <span>Orders</span>
+      </a>
+      <a href="profile_screen.html" class="nav-item">
+        <div class="nav-icon-wrapper"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

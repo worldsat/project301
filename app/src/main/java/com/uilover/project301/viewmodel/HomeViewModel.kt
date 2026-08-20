@@ -37,12 +37,18 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun loadInitialData() {
+        val initialCart = listOf(
+            CartItem(foodItem = MockFoodItems.first { it.id == 5 }, quantity = 1),
+            CartItem(foodItem = MockFoodItems.first { it.id == 1 }, quantity = 2),
+            CartItem(foodItem = MockFoodItems.first { it.id == 6 }, quantity = 1),
+        )
         _uiState.update { state ->
             state.copy(
-                categories   = MockCategories,
-                popularItems = MockFoodItems.filter { it.isPopular },
+                categories    = MockCategories,
+                popularItems  = MockFoodItems.filter { it.isPopular },
                 filteredItems = MockFoodItems,
-                isLoading    = false,
+                cartItems     = initialCart,
+                isLoading     = false,
             )
         }
     }

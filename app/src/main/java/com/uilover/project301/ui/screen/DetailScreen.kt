@@ -1,5 +1,6 @@
 package com.uilover.project301.ui.screen
 
+import android.app.Activity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,10 +55,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import coil3.compose.AsyncImage
 import com.uilover.project301.data.FoodItem
 import com.uilover.project301.data.ImageSource
@@ -79,6 +83,20 @@ fun DetailScreen(
     viewModel: HomeViewModel,
     onBack: () -> Unit,
 ) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        DisposableEffect(Unit) {
+            val window = (view.context as? Activity)?.window
+            val insetsController = window?.let { WindowCompat.getInsetsController(it, view) }
+            val originalStatusBars = insetsController?.isAppearanceLightStatusBars ?: true
+            insetsController?.isAppearanceLightStatusBars = false
+
+            onDispose {
+                insetsController?.isAppearanceLightStatusBars = originalStatusBars
+            }
+        }
+    }
+
     val food = viewModel.getItemById(foodId)
 
     if (food == null) {
@@ -131,6 +149,11 @@ private fun DetailContent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .shadow(
+                        elevation    = 6.dp,
+                        shape        = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+                        ambientColor = Color.Black.copy(alpha = 0.08f),
+                    )
                     .background(
                         color = Color.White,
                         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
@@ -175,7 +198,7 @@ private fun DetailContent(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text  = food.description,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
                     color = OnSurfaceVariant,
                 )
 
@@ -218,7 +241,7 @@ private fun HeroImageSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(420.dp),
     ) {
         when (food.image) {
             is ImageSource.Local -> Image(
@@ -399,12 +422,17 @@ private fun IngredientChip(label: String) {
         verticalAlignment     = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier              = Modifier
+            .shadow(
+                elevation    = 1.5.dp,
+                shape        = RoundedCornerShape(100.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+            )
+            .background(Color.White, RoundedCornerShape(100.dp))
             .border(
                 width = 1.dp,
-                color = Outline,
+                color = Outline.copy(alpha = 0.6f),
                 shape = RoundedCornerShape(100.dp),
             )
-            .background(SurfaceVariant, RoundedCornerShape(100.dp))
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         Box(
@@ -473,6 +501,12 @@ private fun BottomBar(
             horizontalArrangement = Arrangement.Center,
             modifier              = Modifier
                 .weight(1f)
+                .shadow(
+                    elevation    = 6.dp,
+                    shape        = RoundedCornerShape(100.dp),
+                    ambientColor = Primary.copy(alpha = 0.25f),
+                    spotColor    = Primary.copy(alpha = 0.35f),
+                )
                 .clip(RoundedCornerShape(100.dp))
                 .background(Primary)
                 .clickable(onClick = onAdd)

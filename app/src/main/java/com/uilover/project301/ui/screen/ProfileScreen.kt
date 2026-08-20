@@ -86,14 +86,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uilover.project301.data.Screen
+import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSecondary
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
 import com.uilover.project301.ui.theme.Outline
 import com.uilover.project301.ui.theme.Primary
+import com.uilover.project301.ui.theme.Project301Theme
 import com.uilover.project301.ui.theme.Secondary
 import com.uilover.project301.ui.theme.Surface
 import com.uilover.project301.ui.theme.SurfaceVariant
@@ -146,10 +149,12 @@ fun ProfileScreen(
             ProfileTopBar(onEditClick = { showEditProfileDialog = true })
         },
         bottomBar = {
-            ProfileBottomNav(
-                onHomeClick = onHomeClick,
-                onSearchClick = onSearchClick,
-                onOrdersClick = onOrdersClick,
+            AppBottomNav(
+                currentScreen  = Screen.PROFILE,
+                onHomeClick    = onHomeClick,
+                onSearchClick  = onSearchClick,
+                onOrdersClick  = onOrdersClick,
+                onProfileClick = { /* already on profile */ },
             )
         },
     ) { innerPadding ->
@@ -690,10 +695,10 @@ private fun UserHeroCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .shadow(
-                elevation = 2.dp,
+                elevation = 4.dp,
                 shape = RoundedCornerShape(24.dp),
                 ambientColor = Color.Black.copy(alpha = 0.06f),
-                spotColor = Color.Black.copy(alpha = 0.08f),
+                spotColor = Color.Black.copy(alpha = 0.09f),
             ),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -915,9 +920,10 @@ private fun StatItem(
     Card(
         modifier = modifier
             .shadow(
-                elevation = 1.dp,
+                elevation = 3.dp,
                 shape = RoundedCornerShape(18.dp),
-                ambientColor = Color.Black.copy(alpha = 0.04f),
+                ambientColor = Color.Black.copy(alpha = 0.05f),
+                spotColor = Color.Black.copy(alpha = 0.07f),
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -990,10 +996,10 @@ private fun ProfileSectionCard(content: @Composable () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .shadow(
-                elevation = 2.dp,
+                elevation = 4.dp,
                 shape = RoundedCornerShape(22.dp),
-                ambientColor = Color.Black.copy(alpha = 0.05f),
-                spotColor = Color.Black.copy(alpha = 0.07f),
+                ambientColor = Color.Black.copy(alpha = 0.06f),
+                spotColor = Color.Black.copy(alpha = 0.08f),
             ),
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -1305,9 +1311,14 @@ private fun VoucherItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Secondary.copy(alpha = 0.12f))
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color.Black.copy(alpha = 0.04f),
+            )
+            .background(Secondary.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
             .border(1.dp, Secondary.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
             .padding(12.dp),
     ) {
         Column {
@@ -1341,71 +1352,13 @@ private fun VoucherItem(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Bottom Navigation Bar
+// Preview
 // ─────────────────────────────────────────────────────────────────────────────
 
-private data class ProfileNavItem(
-    val screen: Screen,
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
-
+@Preview(name = "Profile Screen Light", showBackground = true, showSystemUi = true)
 @Composable
-private fun ProfileBottomNav(
-    onHomeClick: () -> Unit,
-    onSearchClick: () -> Unit,
-    onOrdersClick: () -> Unit,
-) {
-    val items = listOf(
-        ProfileNavItem(Screen.HOME, "Home", Icons.Filled.Home, Icons.Outlined.Home),
-        ProfileNavItem(Screen.SEARCH, "Search", Icons.Filled.Search, Icons.Outlined.Search),
-        ProfileNavItem(Screen.ORDERS, "Orders", Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart),
-        ProfileNavItem(Screen.PROFILE, "Profile", Icons.Filled.Person, Icons.Outlined.Person),
-    )
-
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 0.dp,
-        modifier = Modifier
-            .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp),
-                ambientColor = Color.Black.copy(alpha = 0.08f),
-            ),
-    ) {
-        items.forEach { item ->
-            val isSelected = item.screen == Screen.PROFILE
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = {
-                    when (item.screen) {
-                        Screen.HOME -> onHomeClick()
-                        Screen.SEARCH -> onSearchClick()
-                        Screen.ORDERS -> onOrdersClick()
-                        Screen.PROFILE -> { /* already on profile */ }
-                    }
-                },
-                icon = {
-                    Icon(
-                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
-                    )
-                },
-                label = {
-                    Text(
-                        text = item.label,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = OnSecondary,
-                    selectedTextColor = Secondary,
-                    indicatorColor = Secondary,
-                    unselectedIconColor = OnSurfaceVariant,
-                    unselectedTextColor = OnSurfaceVariant,
-                ),
-            )
-        }
+private fun ProfileScreenPreview() {
+    Project301Theme {
+        ProfileScreen()
     }
 }
