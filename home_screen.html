@@ -350,7 +350,7 @@
       <div class="section-title">Popular Near You</div>
 
       <!-- Food 1: Luigi's Woodfired Pizza -->
-      <a href="detail_screen.html" class="food-card">
+      <a href="detail_screen.html" class="food-card" data-category="Pizza">
         <div class="food-img-wrap">
           <img class="food-img" src="app/src/main/res/drawable/luigis_woodfired_pizza.jpg" alt="Luigi's Woodfired Pizza" onerror="this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'">
           <div class="rating-badge">
@@ -376,7 +376,7 @@
       </a>
 
       <!-- Food 2: The Smash Grill -->
-      <a href="detail_screen.html" class="food-card">
+      <a href="detail_screen.html" class="food-card" data-category="Burgers">
         <div class="food-img-wrap">
           <img class="food-img" src="app/src/main/res/drawable/the_smash_grill.jpg" alt="The Smash Grill" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80'">
           <div class="food-badge">BEST SELLER</div>
@@ -403,7 +403,7 @@
       </a>
 
       <!-- Food 3: Sakura Sushi -->
-      <a href="detail_screen.html" class="food-card">
+      <a href="detail_screen.html" class="food-card" data-category="Sushi">
         <div class="food-img-wrap">
           <img class="food-img" src="app/src/main/res/drawable/sakura_sushi.jpg" alt="Sakura Sushi" onerror="this.src='https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop&q=80'">
           <div class="rating-badge">
@@ -458,5 +458,34 @@
     </div>
   </div>
 
+  <script>
+    document.querySelectorAll('.category-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const isAlreadyActive = chip.classList.contains('active');
+        document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+        const titleEl = document.querySelector('.section-title');
+        const cards = document.querySelectorAll('.food-card');
+
+        if (isAlreadyActive) {
+          // Deselect & show all popular
+          titleEl.textContent = 'Popular Near You';
+          cards.forEach(card => card.style.display = 'flex');
+        } else {
+          chip.classList.add('active');
+          const categoryName = chip.querySelector('span:last-child').textContent.trim();
+          const emoji = chip.querySelector('.category-emoji').textContent.trim();
+          titleEl.textContent = `${emoji} ${categoryName}`;
+
+          cards.forEach(card => {
+            if (card.dataset.category === categoryName) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>

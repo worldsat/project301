@@ -3,6 +3,7 @@ package com.uilover.project301.ui.component
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -70,10 +71,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uilover.project301.R
 import com.uilover.project301.ui.Routes
 import com.uilover.project301.ui.theme.OnSurface
 import com.uilover.project301.ui.theme.OnSurfaceVariant
@@ -470,27 +474,15 @@ private fun UserProfileCard(
                 Box(
                     modifier = Modifier.size(52.dp),
                 ) {
-                    Box(
+                    Image(
+                        painter = painterResource(R.drawable.user_profile),
+                        contentDescription = "Profile photo",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(52.dp)
                             .clip(CircleShape)
-                            .background(
-                                Brush.linearGradient(
-                                    listOf(Primary.copy(alpha = 0.85f), Secondary)
-                                )
-                            )
-                            .border(2.dp, Color.White, CircleShape),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "AM",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                            ),
-                            color = Color.White,
-                        )
-                    }
+                            .border(2.dp, Primary.copy(alpha = 0.85f), CircleShape),
+                    )
 
                     // VIP Badge
                     Box(

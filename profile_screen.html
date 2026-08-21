@@ -142,14 +142,9 @@
       width: 76px;
       height: 76px;
       border-radius: 50%;
-      background: var(--primary-gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #FFFFFF;
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      object-fit: cover;
+      border: 2.5px solid var(--primary);
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.18);
     }
 
     .avatar-edit-badge {
@@ -551,7 +546,7 @@
       <div class="hero-card">
         <div class="user-info-row">
           <div class="avatar-wrapper">
-            <div class="avatar-circle">AM</div>
+            <img class="avatar-circle" src="app/src/main/res/drawable/user_profile.jpg" alt="Alex Morgan" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&h=600&q=80'">
             <div class="avatar-edit-badge" title="Change photo">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>

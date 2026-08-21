@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.uilover.project301.R
 import com.uilover.project301.data.Category
 import com.uilover.project301.data.FoodItem
 import com.uilover.project301.data.ImageSource
@@ -127,30 +129,64 @@ fun HomeScreen(
 
             // ── Section Header ─────────────────────────────────────────────
             item {
-                Text(
-                    text     = "Popular Near You",
-                    style    = MaterialTheme.typography.titleMedium.copy(
-                        fontSize   = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color    = OnSurface,
+                val selectedCat = uiState.categories.find { it.id == uiState.selectedCategoryId }
+                Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 4.dp),
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text     = if (selectedCat != null) "${selectedCat.emoji} ${selectedCat.name}" else "Popular Near You",
+                        style    = MaterialTheme.typography.titleMedium.copy(
+                            fontSize   = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color    = OnSurface,
+                    )
+                    if (selectedCat != null) {
+                        Text(
+                            text  = "${uiState.filteredItems.size} items",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize   = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                            ),
+                            color = OnSurfaceVariant,
+                        )
+                    }
+                }
             }
 
             // ── Food Cards ─────────────────────────────────────────────────
-            items(
-                items = uiState.popularItems,
-                key   = { it.id },
-            ) { food ->
-                FoodCard(
-                    food        = food,
-                    onAddClick  = { viewModel.addToCart(food) },
-                    onCardClick = { onFoodClick(food.id) },
-                    modifier    = Modifier.padding(horizontal = 16.dp),
-                )
+            if (uiState.filteredItems.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text  = "No items found in this category",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = OnSurfaceVariant,
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = uiState.filteredItems,
+                    key   = { it.id },
+                ) { food ->
+                    FoodCard(
+                        food        = food,
+                        onAddClick  = { viewModel.addToCart(food) },
+                        onCardClick = { onFoodClick(food.id) },
+                        modifier    = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
             }
         }
     }
@@ -186,7 +222,7 @@ private fun HomeTopBar(
             }
         },
         actions = {
-            Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.width(48.dp))
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Surface,

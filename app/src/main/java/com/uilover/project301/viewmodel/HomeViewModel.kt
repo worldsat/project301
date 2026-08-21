@@ -18,7 +18,7 @@ data class HomeUiState(
     val categories: List<Category>      = emptyList(),
     val popularItems: List<FoodItem>    = emptyList(),
     val filteredItems: List<FoodItem>   = emptyList(),
-    val selectedCategoryId: Int         = 1,            // Pizza selected by default
+    val selectedCategoryId: Int         = 0,            // 0 = All / Popular Near You
     val searchQuery: String             = "",
     val cartItems: List<CartItem>       = emptyList(),
     val currentScreen: Screen           = Screen.HOME,
@@ -44,11 +44,12 @@ class HomeViewModel : ViewModel() {
         )
         _uiState.update { state ->
             state.copy(
-                categories    = MockCategories,
-                popularItems  = MockFoodItems.filter { it.isPopular },
-                filteredItems = MockFoodItems,
-                cartItems     = initialCart,
-                isLoading     = false,
+                categories         = MockCategories,
+                popularItems       = MockFoodItems.filter { it.isPopular },
+                filteredItems      = MockFoodItems.filter { it.isPopular },
+                selectedCategoryId = 0,
+                cartItems          = initialCart,
+                isLoading          = false,
             )
         }
     }
@@ -57,9 +58,16 @@ class HomeViewModel : ViewModel() {
 
     fun onCategorySelected(categoryId: Int) {
         _uiState.update { state ->
+            val isAlreadySelected = state.selectedCategoryId == categoryId
+            val newSelectedId = if (isAlreadySelected) 0 else categoryId
+            val items = if (newSelectedId == 0) {
+                MockFoodItems.filter { it.isPopular }
+            } else {
+                MockFoodItems.filter { it.categoryId == newSelectedId }
+            }
             state.copy(
-                selectedCategoryId = categoryId,
-                filteredItems      = MockFoodItems.filter { it.categoryId == categoryId },
+                selectedCategoryId = newSelectedId,
+                filteredItems      = items,
             )
         }
     }

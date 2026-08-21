@@ -3,6 +3,7 @@ package com.uilover.project301.ui.screen
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,11 +86,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uilover.project301.R
 import com.uilover.project301.data.Screen
 import com.uilover.project301.ui.component.AppBottomNav
 import com.uilover.project301.ui.theme.OnSecondary
@@ -733,32 +737,15 @@ private fun UserHeroCard(
                 Box(
                     modifier = Modifier.size(76.dp),
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    Image(
+                        painter = painterResource(R.drawable.user_profile),
+                        contentDescription = "Profile photo of $name",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(76.dp)
                             .clip(CircleShape)
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        Primary,
-                                        Color(0xFFE57373),
-                                    )
-                                )
-                            ),
-                    ) {
-                        Text(
-                            text = name.split(" ")
-                                .mapNotNull { it.firstOrNull()?.toString() }
-                                .take(2)
-                                .joinToString(""),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp,
-                            ),
-                            color = Color.White,
-                        )
-                    }
+                            .border(2.5.dp, Primary, CircleShape),
+                    )
 
                     // Edit camera badge
                     Box(
